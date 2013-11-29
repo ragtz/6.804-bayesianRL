@@ -1,6 +1,6 @@
 class RLObject:
-	def __init__(self, name):
-		self.name = name
+	def __init__(self, id):
+		self.id = id
 
 	def __eq__(self, other):
 		if isinstance(other, self.__class__):
@@ -11,13 +11,16 @@ class RLObject:
 	def __ne__(self, other):
 		return not self.__eq__(other)  
 
+	def get_id(self):
+		return self.id
+
 class Action(RLObject):
 	def __str__(self):
-		return "Action " + self.name
+		return "Action " + str(self.id)
 
 class State(RLObject):
 	def __str__(self):
-		return "State " + self.name
+		return "State " + str(self.id)
 
 class Model(RLObject):
 	def __init__(self, name):
@@ -27,9 +30,14 @@ class Model(RLObject):
 		# list of all states
 		self.states = []
 		self.current_state = None
+		self.step = 0
 
 	def __str__(self):
-		return "Model:" + self.name 
+		s = "Model:" + self.name + "\n"
+		s += "States:" + str(self.states) + "\n"
+		s += "Actions:" + str(self.actions) + "\n"
+
+		return s 
 
 	def get_current_state(self):
 		raise Exception("not implemented")
@@ -42,17 +50,8 @@ class Model(RLObject):
 	def get_next_states(self):
 		raise Exception("not implemented")
 
-	def perform_action(self, action):
+	def perform(self, action):
 		raise Exception("not implemented")
 
-a = Action("1")
-b = Action("1")
-c = Action("2")
-d = State("!")
-e = State("!")
-
-print a
-print a == b
-print a == c
-print a == d
-print e == d
+	def num_steps(self):
+		return self.step
