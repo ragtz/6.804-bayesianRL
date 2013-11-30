@@ -11,12 +11,8 @@ class ChainModel(Model):
 		self.state[5] = State(5)
 		self.act_a = Action(0)
 		self.act_b = Action(1)
-
-		self.states = [self.state[1], self.state[2], self.state[3],
-			self.state[4], self.state[5]]
-
-		self.actions = [self.act_a, self.act_b]
-
+		self.states = self.get_states_by_id([1,2,3,4,5])
+		self.actions = [self.act_b, self.act_a]
 		self.current_state = self.state[1]
 		self.step = 0
 
@@ -24,7 +20,6 @@ class ChainModel(Model):
 	def perform(self, action):
 		next_state = None
 		reward = None
-
 		if action == self.act_a:
 			if self.current_state == self.state[5]:
 				next_state = self.state[5]
@@ -36,10 +31,8 @@ class ChainModel(Model):
 		else:
 			next_state = self.state[1]
 			reward = 2
-
 		self.current_state = next_state
 		self.step += 1
-
 		return reward
 
 	def get_next_states(self, state):
@@ -50,19 +43,33 @@ class ChainModel(Model):
 			L.append(self.state[state.get_id()+1])
 		return L
 
+	def get_states_by_id(self, L):
+		states = []
+		for id in L:
+			states.append(self.state[id])
+		return states
+
+	def get_prev_states(self, state):
+		if state == self.state[1]:
+			return self.get_states_by_id([1,2,3,4,5])
+		elif state == self.state[5]:
+			return self.get_states_by_id([4, 5])
+		else:
+			return self.get_states_by_id([state.get_id() - 1])
+
 	def get_actions(self, state):
 		return self.actions
 
-m = ChainModel()
-a = m.act_a
-b = m.act_b
-print m.perform(a)
-print m.current_state
-print m.perform(a)
-print m.current_state
-print m.perform(a)
-print m.current_state
-print m.perform(a)
-print m.current_state
-print m.perform(a)
-print m.current_state
+# m = ChainModel()
+# a = m.act_a
+# b = m.act_b
+# print m.perform(a)
+# print m.current_state
+# print m.perform(a)
+# print m.current_state
+# print m.perform(a)
+# print m.current_state
+# print m.perform(a)
+# print m.current_state
+# print m.perform(a)
+# print m.current_state

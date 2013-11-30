@@ -1,15 +1,15 @@
-class RLObject:
+class RLObject(object):
 	def __init__(self, id):
 		self.id = id
 
-	def __eq__(self, other):
-		if isinstance(other, self.__class__):
-			return self.__dict__ == other.__dict__
-		else:
-			return False
+	# def __eq__(self, other):
+	# 	if isinstance(other, self.__class__):
+	# 		return self.__dict__ == other.__dict__
+	# 	else:
+	# 		return False
 
-	def __ne__(self, other):
-		return not self.__eq__(other)  
+	# def __ne__(self, other):
+	# 	return not self.__eq__(other)  
 
 	def get_id(self):
 		return self.id
@@ -18,9 +18,15 @@ class Action(RLObject):
 	def __str__(self):
 		return "Action " + str(self.id)
 
+	def __repr__(self):
+		return self.__str__()
+
 class State(RLObject):
 	def __str__(self):
 		return "State " + str(self.id)
+		
+	def __repr__(self):
+		return self.__str__()
 
 class Model(RLObject):
 	def __init__(self, name):
@@ -43,12 +49,12 @@ class Model(RLObject):
 		raise Exception("not implemented")
 
 	# get all available actions for this state
-	def get_actions(self):
+	def get_actions(self, state):
 		raise Exception("not implemented")
 
 	# get the available next states from this state - might
 	# not be available for some algorithms
-	def get_next_states(self):
+	def get_next_states(self, state):
 		raise Exception("not implemented")
 
 	def perform(self, action):
