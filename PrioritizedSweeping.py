@@ -28,6 +28,20 @@ class PrioritizedSweeping(RLAlgorithm):
 			return s/float(total)
 		return 0
 
+	def get_transition_table(self, state, action):
+		L = []
+		for next_state in self.model.get_next_states(state):
+			if self.get_transition(state, action, next_state) > 0:
+				L.append((next_state, self.get_transition(state, action, next_state)))
+		return L
+
+	def get_reward_table(self, state, action):
+		L = []
+		for next_state in self.model.get_next_states(state):
+			if self.get_reward(state, action, next_state) > 0:
+				L.append((next_state, self.get_reward(state, action, next_state)))
+		return L
+
 	# compute transition function P(s1, a, s2)
 	def get_transition(self, s1, a, s2):
 		v = (s1, a, s2)
@@ -86,40 +100,43 @@ class PrioritizedSweeping(RLAlgorithm):
 			self.queue.append((value, state))
 		heapq.heapify(self.queue)
 
+	# compute impact C(s, s*) = sum over a P(s|s*,a)*delta(s)
 	def compute_impact(self, s1, s0, delta):
 		s = 0
 		for action in self.model.get_actions(s0):
 			s += self.get_transition(s0, action, s1)*delta
 		return s
 
+	# V(s, a) = sum over s' P(s'|s,a)*(R(s,a,s') + V(s'))
+	def compute_v_per_action(self, state, action):
+		s = 0
+		for next_state in self.model.get_next_states(state):
+			s += self.get_transition(state, action, next_state)*(
+				self.get_reward(state, action, next_state) + self.get_v(next_state))
+		return s
+
 	# perform a Bellman backup on that state
 	def sweep(self, state):
-		def compute_action(action):
-			s = 0
-			for next_state in self.model.get_next_states(state):
-				s += self.get_transition(state, action, next_state)*(
-					self.get_reward(state, action, next_state) + self.get_v(next_state))
-			return s
 		actions = self.model.get_actions(state)
-		V_new = compute_action(actions[0])
+		V_new = self.compute_v_per_action(state, actions[0])
 		for action in actions:
-			V_new = max(V_new, compute_action(action))
+			V_new = max(V_new, self.compute_v_per_action(state, action))
 		delta = abs(self.get_v(state) - V_new)
+		# update the dictionary
 		self.V[state] = V_new
 		for s0 in self.model.get_prev_states(state):
 			capacity = self.compute_impact(state, s0, delta)
 			self.update_queue(s0, -capacity)
-		# update the dictionary
 
-	def next(self):
-		action = None
-		# with some probability, choose a random action
-		if random.random() < self.e:
-			actions = self.model.get_actions(self.model.current_state)
-			action = actions[random.randint(0, len(actions) - 1)]
-		else:
-			best_next_state = self.get_next_best_state()
-			action = self.get_best_action(best_next_state)
+	def next(self, action = None):
+		if action == None:
+			# with some probability, choose a random action
+			if random.random() < self.e:
+				actions = self.model.get_actions(self.model.current_state)
+				action = actions[random.randint(0, len(actions) - 1)]
+			else:
+				best_next_state = self.get_next_best_state()
+				action = self.get_best_action(best_next_state)
 		current_state = self.model.current_state
 		reward = self.model.perform(action)
 		next_state = self.model.current_state
@@ -131,8 +148,17 @@ class PrioritizedSweeping(RLAlgorithm):
 			self.sweep(state)
 		return (reward, next_state)
 
-ps = PrioritizedSweeping(ChainModel())
+ps = PrioritizedSweeping(SlipperyChainModel(), 3, 0.1)
 for i in range(10000):
 	print ps.next()
+# expect state 5 to have the highest potential
 for state in ps.model.states:
 	print ps.get_v(state)
+
+# for i in range(1, 6):
+# 	print "transition model"
+# 	print ps.get_transition_table(ps.model.state[i], ps.model.act_a)
+# 	print ps.get_transition_table(ps.model.state[i], ps.model.act_b)
+# 	print "reward model"
+# 	print ps.get_reward_table(ps.model.state[i], ps.model.act_a)
+# 	print ps.get_reward_table(ps.model.state[i], ps.model.act_b)

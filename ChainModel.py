@@ -1,4 +1,5 @@
 from RL_framework import *
+import random
 
 class ChainModel(Model):
 	def __init__(self):
@@ -12,9 +13,16 @@ class ChainModel(Model):
 		self.act_a = Action(0)
 		self.act_b = Action(1)
 		self.states = self.get_states_by_id([1,2,3,4,5])
-		self.actions = [self.act_b, self.act_a]
+		self.actions = [self.act_a, self.act_b]
 		self.current_state = self.state[1]
 		self.step = 0
+		print "init A"
+
+	def get_action_by_id(self, id):
+		if id == 0:
+			return self.act_a
+		else:
+			return self.act_b
 
 	# perform an action on the model
 	def perform(self, action):
@@ -27,7 +35,7 @@ class ChainModel(Model):
 			else:
 				id = self.current_state.get_id()
 				next_state = self.state[id + 1]
-				reward = 0
+				reward = 0.1
 		else:
 			next_state = self.state[1]
 			reward = 2
@@ -53,23 +61,30 @@ class ChainModel(Model):
 		if state == self.state[1]:
 			return self.get_states_by_id([1,2,3,4,5])
 		elif state == self.state[5]:
-			return self.get_states_by_id([4, 5])
+			return self.get_states_by_id([4,5])
 		else:
 			return self.get_states_by_id([state.get_id() - 1])
 
 	def get_actions(self, state):
 		return self.actions
 
-# m = ChainModel()
+# define the slippery chain model where with probability e, performing an action
+# will have the opposite effect
+class SlipperyChainModel(ChainModel):
+	def __init__(self, e = 0.2):
+		self.e = e
+		ChainModel.__init__(self)
+
+	def perform(self, action):
+		if random.random() < self.e:
+			return ChainModel.perform(self, self.get_action_by_id(1 - action.id))
+		else:
+			return ChainModel.perform(self, action)
+
+
+# m = SlipperyChainModel(0.1)
 # a = m.act_a
 # b = m.act_b
 # print m.perform(a)
 # print m.current_state
 # print m.perform(a)
-# print m.current_state
-# print m.perform(a)
-# print m.current_state
-# print m.perform(a)
-# print m.current_state
-# print m.perform(a)
-# print m.current_state
