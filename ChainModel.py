@@ -20,6 +20,7 @@ class ChainModel(Model):
 		self.current_state = self.state[1]
 		self.step = 0
 
+	# perform an action on the model
 	def perform(self, action):
 		next_state = None
 		reward = None
@@ -41,17 +42,17 @@ class ChainModel(Model):
 
 		return reward
 
-	def get_next_states(self):
+	def get_next_states(self, state):
 		L = [self.state[1]]
-		if self.current_state == self.state[5]:
+		if state == self.state[5]:
 			L.append(self.state[5])
 		else:
-			L.append(self.state[self.current_state.get_id()+1])
+			L.append(self.state[state.get_id()+1])
 		return L
 
-	def get_actions(self):
+	def get_actions(self, state):
 		return self.actions
-		
+
 m = ChainModel()
 a = m.act_a
 b = m.act_b
