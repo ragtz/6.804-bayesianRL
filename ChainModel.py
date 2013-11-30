@@ -41,6 +41,17 @@ class ChainModel(Model):
 
 		return reward
 
+	def get_next_states(self):
+		L = [self.state[1]]
+		if self.current_state == self.state[5]:
+			L.append(self.state[5])
+		else:
+			L.append(self.state[self.current_state.get_id()+1])
+		return L
+
+	def get_actions(self):
+		return self.actions
+		
 m = ChainModel()
 a = m.act_a
 b = m.act_b

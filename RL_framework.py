@@ -47,6 +47,7 @@ class Model(RLObject):
 		raise Exception("not implemented")
 
 	# get the available next states from this state - might
+	# not be available for some algorithms
 	def get_next_states(self):
 		raise Exception("not implemented")
 
@@ -55,3 +56,10 @@ class Model(RLObject):
 
 	def num_steps(self):
 		return self.step
+
+class RLAlgorithm:
+	def get_transition(self, state, action, next_state):
+		raise Exception("not implemented")
+
+	def get_reward(self, state, action, next_state):
+		raise Exception("not implemented")
