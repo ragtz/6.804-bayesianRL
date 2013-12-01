@@ -1,5 +1,4 @@
 from RL_framework import *
-import heapq
 from ChainModel import *
 import random
 
@@ -100,19 +99,4 @@ class QLearning(RLAlgorithm):
 		self.update_reward(current_state, action, next_state, reward)
 		self.update_Q(current_state, action, next_state, reward)
 		return (reward, next_state)
-
-ps = QLearning(SlipperyChainModel())
-for i in range(1000):
-	print ps.next()
-# expect state 5 to have the highest potential
-for state in ps.model.states:
-    for action in ps.model.actions:
-	    print "("+str(state)+","+str(action)+"): "+str(ps.get_Q(state, action))
-
-# for i in range(1, 6):
-# 	print "transition model"
-# 	print ps.get_transition_table(ps.model.state[i], ps.model.act_a)
-# 	print ps.get_transition_table(ps.model.state[i], ps.model.act_b)
-# 	print "reward model"
-# 	print ps.get_reward_table(ps.model.state[i], ps.model.act_a)
-# 	print ps.get_reward_table(ps.model.state[i], ps.model.act_b)
+		
