@@ -102,11 +102,12 @@ class QLearning(RLAlgorithm):
 		return (reward, next_state)
 
 ps = QLearning(SlipperyChainModel())
-for i in range(10000):
+for i in range(1000):
 	print ps.next()
 # expect state 5 to have the highest potential
 for state in ps.model.states:
-	print ps.get_v(state)
+    for action in ps.model.actions:
+	    print "("+str(state)+","+str(action)+"): "+str(ps.get_Q(state, action))
 
 # for i in range(1, 6):
 # 	print "transition model"
