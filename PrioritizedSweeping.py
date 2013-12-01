@@ -6,7 +6,7 @@ import random
 class PrioritizedSweeping(RLAlgorithm):
 	# model: the input model
 	# e: the parameter for randomization
-	def __init__(self, model, k = 5, e = 0.5):
+	def __init__(self, model, k = 5, e = 0.2):
 		self.model = model
 		# reward model
 		self.R = {}

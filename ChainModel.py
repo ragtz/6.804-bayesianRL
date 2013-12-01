@@ -13,7 +13,7 @@ class ChainModel(Model):
 		self.act_a = Action(0)
 		self.act_b = Action(1)
 		self.states = self.get_states_by_id([1,2,3,4,5])
-		self.actions = [self.act_a, self.act_b]
+		self.actions = [self.act_b, self.act_a]
 		self.current_state = self.state[1]
 		self.step = 0
 		print "init A"
@@ -35,7 +35,7 @@ class ChainModel(Model):
 			else:
 				id = self.current_state.get_id()
 				next_state = self.state[id + 1]
-				reward = 0.1
+				reward = 0
 		else:
 			next_state = self.state[1]
 			reward = 2
