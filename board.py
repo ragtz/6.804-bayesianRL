@@ -2,16 +2,18 @@ import pygame
 from RL_framework import *
 
 class StateIcon:
-    def __init__(self, radius = 50, color = (255,255,255), width = 0, font_size = 80):
+    def __init__(self, radius = 50, color = (255,255,255), width = 0, font_size = 80, font_color = (0,0,0)):
         self.radius = radius
         self.color = color
         self.width = width
+        self.font_size = font_size
+        self.font_color = font_color
         self.font = pygame.font.SysFont(pygame.font.get_default_font(), font_size)
         
     def display(self, screen, state):
         x = screen.get_width()/2
         y = screen.get_height()/2
-        label = self.font.render(str(state), 1, (0,0,0))
+        label = self.font.render(str(state), 1, self.font_color)
         pygame.draw.circle(screen, self.color, (x, y), self.radius, self.width)
         screen.blit(label, (x-(label.get_width()/2),y-(label.get_height()/2)))
 
@@ -71,9 +73,10 @@ class ActionsIcon:
         
         
 class RewardIcon:
-    def __init__(self, start = 0, font_size = 50):
+    def __init__(self, start = 0, font_size = 50, color = (255,255,255)):
         self.reward = start
         self.font_size = font_size
+        self.color = color
         self.font = pygame.font.SysFont(pygame.font.get_default_font(), font_size)
         
     def update(self, reward):
@@ -84,16 +87,48 @@ class RewardIcon:
         pad = self.font_size/5
         x = screen.get_width()
         y = screen.get_height()
-        label = self.font.render(str(self.reward), 1, (255,255,255))
+        label = self.font.render("R: "+str(self.reward), 1, self.color)
         screen.blit(label, (x-label.get_width()-pad,pad))
+        
+class StepIcon:
+    def __init__(self, start = 0, font_size = 50, color = (255,255,255)):
+        self.step = start
+        self.font_size = font_size
+        self.color = color
+        self.font = pygame.font.SysFont(pygame.font.get_default_font(), font_size)
+        
+    def update(self, step):
+        self.step = step
+        
+    def display(self, screen):
+        pad = self.font_size/5
+        x = screen.get_width()
+        y = screen.get_height()
+        label = self.font.render("S: "+str(self.step), 1, self.color)
+        screen.blit(label, (pad,pad))
+        
+class DoneIcon:
+    def __init__(self, font_size = 120, color = (255,0,0)):
+        self.font_size = font_size
+        self.color = color
+        self.font = pygame.font.SysFont(pygame.font.get_default_font(), font_size)
+        
+    def display(self, screen):
+        x = screen.get_width()/2
+        y = screen.get_height()/2
+        label = self.font.render("Done", 1, self.color)
+        screen.blit(label, (x-(label.get_width()/2),y-(label.get_height()/2)))
 
 
 class Board:
-    def __init__(self, model):
+    def __init__(self, model, max_steps):
         self.model = model
         self.state = StateIcon()
         self.actions = ActionsIcon()
         self.reward = RewardIcon()
+        self.step = StepIcon()
+        self.max_steps = max_steps
+        self.done = False
         
     def _performAction(self, action):
         reward = None
@@ -103,32 +138,51 @@ class Board:
             reward = self.model.perform(action)
             
         self.reward.update(reward)
+        self.step.update(self.model.step)
+        
+        if self.model.step >= self.max_steps:
+            self.done = True
             
         return reward
         
     def actionA(self):
-        action = self.model.get_action_by_id(0)
-        return self._performAction(action)
+        if not self.done:
+            action = self.model.get_action_by_id(0)
+            return self._performAction(action)
+        else:
+            return None
     
     def actionB(self):
-        action = self.model.get_action_by_id(1)
-        return self._performAction(action)
+        if not self.done:
+            action = self.model.get_action_by_id(1)
+            return self._performAction(action)
+        else:
+            return None
     
     def actionC(self):
-        action = self.model.get_action_by_id(2)
-        return self._performAction(action)
+        if not self.done:
+            action = self.model.get_action_by_id(2)
+            return self._performAction(action)
+        else:
+            return None
     
     def actionD(self):
-        action = self.model.get_action_by_id(3)
-        return self._performAction(action)
+        if not self.done:
+            action = self.model.get_action_by_id(3)
+            return self._performAction(action)
+        else:
+            return None
     
     def display(self, screen):
-        self.state.display(screen, self.model.current_state.get_id())
+        if not self.done:
+            self.state.display(screen, self.model.current_state.get_id())
         
-        action_ids = []
-        for a in self.model.get_actions(self.model.current_state):
-            action_ids.append(a.get_id())    
-        self.actions.display(screen, action_ids)
-        
+            action_ids = []
+            for a in self.model.get_actions(self.model.current_state):
+                action_ids.append(a.get_id())    
+            self.actions.display(screen, action_ids)
+        else:
+            DoneIcon().display(screen)    
         self.reward.display(screen)
+        self.step.display(screen)
         

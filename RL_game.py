@@ -1,6 +1,7 @@
 import os, sys
 import pygame
 from ChainModel import *
+from LoopModel import *
 from board import Board
 
 SCREEN_WIDTH = 400
@@ -11,7 +12,7 @@ def run_game(record_file=None):
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
-    board = Board(SlipperyChainModel())
+    board = Board(LoopModel(),10)
     
     if record_file != None:
         record = True
