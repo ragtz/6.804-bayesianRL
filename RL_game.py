@@ -12,7 +12,7 @@ def run_game(record_file=None):
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
-    board = Board(LoopModel(),10)
+    board = Board(SlipperyChainModel(),float("inf"))
     
     if record_file != None:
         record = True
@@ -20,8 +20,9 @@ def run_game(record_file=None):
         record = False
         
     if record:
-        record_file.write("state,action,reward\n")
+        record_file.write("state,action,reward,total\n")
     
+    total = 0
     while True:
         time_passed = clock.tick(50)
         
@@ -48,7 +49,8 @@ def run_game(record_file=None):
                     reward = board.actionD()
                 
         if record and reward != None:
-            record_file.write(str(state.get_id())+","+str(action)+","+str(reward)+"\n")
+            total += reward
+            record_file.write(str(state.get_id())+","+str(action)+","+str(reward)+","+str(total)+"\n")
         
         screen.fill(BG_COLOR)
         board.display(screen)

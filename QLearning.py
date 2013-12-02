@@ -98,5 +98,5 @@ class QLearning(RLAlgorithm):
 		self.update_transition(current_state, action, next_state)
 		self.update_reward(current_state, action, next_state, reward)
 		self.update_Q(current_state, action, next_state, reward)
-		return (reward, next_state)
+		return (action, reward, next_state)
 		

@@ -146,14 +146,14 @@ class PrioritizedSweeping(RLAlgorithm):
         for i in range(self.k - 1):
             (v, state) = heapq.heappop(self.queue)
             self.sweep(state)
-        return (reward, next_state)
+        return (action, reward, next_state)
 
-ps = PrioritizedSweeping(SlipperyChainModel(), 3, 0.1)
-for i in range(10000):
-    print ps.next()
+#ps = PrioritizedSweeping(SlipperyChainModel(), 3, 0.1)
+#for i in range(1000):
+#    print ps.next()
 # expect state 5 to have the highest potential
-for state in ps.model.states:
-    print ps.get_v(state)
+#for state in ps.model.states:
+#    print ps.get_v(state)
 
 # for i in range(1, 6):
 #   print "transition model"
