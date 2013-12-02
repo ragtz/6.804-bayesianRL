@@ -36,7 +36,8 @@ class LoopModel(Model):
         self.state[8] = StateNode(8, [self.act_a,self.act_b], [0,0], [2,2], [7])
         self.states = self.get_states_by_id([0,1,2,3,4,5,6,7,8])
         self.actions = [self.act_a, self.act_b]
-        self.current_state = self.state[0]
+        self.start_state = self.state[0]
+        self.current_state = self.start_state
         self.step = 0
         
     def get_action_by_id(self, id):
@@ -52,14 +53,14 @@ class LoopModel(Model):
         reward = None
         if action in self.actions:
             (next_state_id, reward) = self.current_state.perform(action)
-            self.current_state = self.states[next_state_id]
+            self.current_state = self.state[next_state_id]
             self.step += 1
         return reward
 
     def get_next_states(self, state):
         L = []
-        for id in self.states[state.get_id()].get_next_state_ids():
-            L.append(self.states[id])
+        for id in self.state[state.get_id()].get_next_state_ids():
+            L.append(self.state[id])
         return L
 
     def get_states_by_id(self, L):
@@ -70,8 +71,8 @@ class LoopModel(Model):
 
     def get_prev_states(self, state):
         L = []
-        for id in self.states[state.get_id()].get_prev_state_ids():
-            L.append(self.states[id])
+        for id in self.state[state.get_id()].get_prev_state_ids():
+            L.append(self.state[id])
         return L
 
     def get_actions(self, state):
