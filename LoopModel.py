@@ -46,6 +46,15 @@ class LoopModel(Model):
             return self.act_b
         else:
             return None
+
+    def perform_action_a(self):
+        return self.perform(self.act_a)
+
+    def perform_action_b(self):
+        return self.perform(self.act_b)
+
+    def set_current_state_by_state_id(self, id):
+        self.current_state = self.state[id]
             
     # perform an action on the model
     def perform(self, action):
