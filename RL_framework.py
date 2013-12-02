@@ -35,6 +35,7 @@ class Model(RLObject):
 		self.actions = []
 		# list of all states
 		self.states = []
+		self.start_state = None
 		self.current_state = None
 		self.step = 0
 
@@ -62,6 +63,9 @@ class Model(RLObject):
 
 	def num_steps(self):
 		return self.step
+		
+	def reset(self):
+		self.current_state  = self.start_state
 
 class RLAlgorithm:
 	def get_transition(self, state, action, next_state):

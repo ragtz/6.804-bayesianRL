@@ -14,7 +14,8 @@ class ChainModel(Model):
         self.act_b = Action(1)
         self.states = self.get_states_by_id([1,2,3,4,5])
         self.actions = [self.act_a, self.act_b]
-        self.current_state = self.state[1]
+        self.start_state = self.state[1]
+        self.current_state = self.start_state
         self.step = 0
 
     def get_action_by_id(self, id):
