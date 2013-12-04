@@ -19,6 +19,7 @@ class PrioritizedSweeping(RLAlgorithm):
         self.e = e
         # priority queue
         self.queue = []
+        self.delta = 0.001
 
     # compute reward function R(s1, a, s2)
     def get_reward(self, s1, a, s2):
@@ -55,26 +56,33 @@ class PrioritizedSweeping(RLAlgorithm):
         return self.V.get(state, 0)
 
     # get the next best state
+    # if the best 
     def get_next_best_state(self):
         L = self.model.get_next_states(self.model.current_state)
-        best_state = L[0]
-        m = self.get_v(best_state)
-        for s in self.model.get_next_states(self.model.current_state):
-            if self.get_v(s) > m:
+        best_state = [L[0]]
+        m = self.get_v(L[0])
+        for s in L:
+            # first, check for ties, then check for >
+            if abs(self.get_v(s) - m) < self.delta*m:
+                best_state.append(s)
+            elif self.get_v(s) > m:
                 m = self.get_v(s)
-                best_state = s
-        return best_state
+                best_state = [s]
+        return random.choice(best_state)
 
     # for any state, get the best action to get into that state from the current state
+    # if there are actions with equal probability, choose a random one
     def get_best_action(self, next_state):
         actions = self.model.get_actions(self.model.current_state)
-        action = actions[0]
-        p = self.get_transition(self.model.current_state, action, next_state)
+        p = self.get_transition(self.model.current_state, actions[0], next_state)
+        action = [actions[0]]
         for a in actions:
-            if self.get_transition(self.model.current_state, a, next_state) > p:
+            if abs(self.get_transition(self.model.current_state, a, next_state) - p) < self.delta:
+                action.append(a)
+            elif self.get_transition(self.model.current_state, a, next_state) > p:
                 p = self.get_transition(self.model.current_state, a, next_state)
-                action = a
-        return action
+                action = [a]
+        return random.choice(action)
 
     # update the transition model, keeping track of counts
     def update_transition(self, s1, a, s2):
