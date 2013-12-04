@@ -1,6 +1,7 @@
 import sys
 from PrioritizedSweeping import *
 from QLearning import *
+from QLearn import *
 from ChainModel import *
 from ChainModel2 import *
 from LoopModel import *
@@ -113,7 +114,7 @@ def ql(args):
         elif learning_rate != None:
             ql = QLearning(model, learning_rate)
         else:
-            ql = QLearning(model)
+            ql = QLearn(model,model.actions)
         
         if record_file != None:
             run(ql, num_steps, record_file)
@@ -131,14 +132,16 @@ def run(l_alg, num_steps, record_file=None):
     if record:
         record_file.write("state,action,reward,total\n")
         
-    total = 0
-    state = l_alg.model.current_state
-    for i in range(num_steps):
-        (action, reward, next_state) = l_alg.next()
-        if record:
-            record_file.write(str(state.get_id())+","+str(action.get_id())+","+str(reward)+","+str(total)+"\n")
-        state = next_state
-        total += reward
+    for j in range(8):
+        total = 0
+        state = l_alg.model.current_state
+        for i in range(num_steps):
+            (action, reward, next_state) = l_alg.next()
+            if record:
+                record_file.write(str(state.get_id())+","+str(action.get_id())+","+str(reward)+","+str(total)+"\n")
+            state = next_state
+            total += reward
+        l_alg.model.reset()
    
     print total
 

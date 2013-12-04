@@ -5,7 +5,7 @@ import random
 class QLearning(RLAlgorithm):
 	# model: the input model
 	# e: the parameter for randomization
-	def __init__(self, model, learning_rate = 0.9, discount_rate = 0.2, e = 0.1):
+	def __init__(self, model, learning_rate = 0.2, discount_rate = 0.9, e = 0.1):
 		self.model = model
 		# reward model
 		self.R = {}
