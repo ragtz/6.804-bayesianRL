@@ -21,35 +21,6 @@ class PrioritizedSweeping(RLAlgorithm):
         self.queue = []
         self.delta = 0.001
 
-    # compute reward function R(s1, a, s2)
-    def get_reward(self, s1, a, s2):
-        v = (s1, a, s2)
-        if v in self.R:
-            (s, total) = self.R[v]
-            return s/float(total)
-        return 0
-
-    def get_transition_table(self, state, action):
-        L = []
-        for next_state in self.model.get_next_states(state):
-            if self.get_transition(state, action, next_state) > 0:
-                L.append((next_state, self.get_transition(state, action, next_state)))
-        return L
-
-    def get_reward_table(self, state, action):
-        L = []
-        for next_state in self.model.get_next_states(state):
-            if self.get_reward(state, action, next_state) > 0:
-                L.append((next_state, self.get_reward(state, action, next_state)))
-        return L
-
-    # compute transition function P(s1, a, s2)
-    def get_transition(self, s1, a, s2):
-        v = (s1, a, s2)
-        if v in self.P:
-            return self.P[v]/float(self.P[(s1, a)])
-        return 0
-
     # compute the value function V(s)
     def get_v(self, state):
         # print type(state)
@@ -83,16 +54,6 @@ class PrioritizedSweeping(RLAlgorithm):
                 p = self.get_transition(self.model.current_state, a, next_state)
                 action = [a]
         return random.choice(action)
-
-    # update the transition model, keeping track of counts
-    def update_transition(self, s1, a, s2):
-        self.P[(s1, a)] = self.P.get((s1, a), 0) + 1
-        self.P[(s1, a, s2)] = self.P.get((s1, a, s2), 0) + 1
-
-    # keeping track of the reward model
-    def update_reward(self, s1, a, s2, r):
-        (s, total) = self.R.get((s1, a, s2), (0, 0))
-        self.R[(s1, a, s2)] = (s + r, total + 1)
 
     # update the min queue with the value & state
     def update_queue(self, state, value):

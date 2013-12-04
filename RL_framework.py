@@ -71,5 +71,24 @@ class RLAlgorithm:
 	def get_transition(self, state, action, next_state):
 		raise Exception("not implemented")
 
-	def get_reward(self, state, action, next_state):
-		raise Exception("not implemented")
+    def get_reward(self, s1, a, s2):
+    	""" compute the reward for state, action, next state"""
+        v = (s1, a, s2)
+        if v in self.R:
+            (s, total) = self.R[v]
+            return s/float(total)
+        return 0
+
+	def get_transition_table(self, state, action):
+        L = []
+        for next_state in self.model.get_next_states(state):
+            if self.get_transition(state, action, next_state) > 0:
+                L.append((next_state, self.get_transition(state, action, next_state)))
+        return L
+
+    def get_reward_table(self, state, action):
+        L = []
+        for next_state in self.model.get_next_states(state):
+            if self.get_reward(state, action, next_state) > 0:
+                L.append((next_state, self.get_reward(state, action, next_state)))
+        return L
