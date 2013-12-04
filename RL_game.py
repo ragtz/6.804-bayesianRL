@@ -1,6 +1,7 @@
 import os, sys
 import pygame
 from ChainModel import *
+from ChainModel2 import *
 from LoopModel import *
 from board import Board
 
@@ -12,7 +13,7 @@ def run_game(record_file=None):
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
-    board = Board(SlipperyChainModel(),float("inf"))
+    board = Board(ChainModel2(),float("inf"))
     
     if record_file != None:
         record = True
