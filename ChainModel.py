@@ -61,9 +61,9 @@ class ChainModel(Model):
 
     def get_prev_states(self, state):
         if state == self.state[1]:
-            return self.get_states_by_id([2,3,4,5])
+            return self.get_states_by_id([1,2,3,4,5])
         elif state == self.state[5]:
-            return self.get_states_by_id([4])
+            return self.get_states_by_id([4,5])
         else:
             return self.get_states_by_id([state.get_id() - 1])
 
