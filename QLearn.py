@@ -17,7 +17,7 @@ class QLearn:
         # return self.q.get((state, action), 1.0)
 
     def learnQ(self, state, action, reward, value):
-        """ Q(state, action) = Q_old + a(value - Q_old) """
+        """ Q(state, action) = Q_old + alpha*(reward + gamma*maxqnew - Q_old) """
         oldv = self.q.get((state, action), None)
         if oldv is None:
             self.q[(state, action)] = reward
