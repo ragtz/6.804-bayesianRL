@@ -1,18 +1,21 @@
 from LoopModel import *
+from ChainModel import *
 from ChainModel2 import *
 from PrioritizedSweeping import *
 from QLearning import *
 from QLearn import *
+from PrioritizedQLearning import *
 
 model = ChainModel()
 # ps = QLearn(model, model.actions)
 # ps = QLearning(model, 0.2, 0.2, 0.99)
-ps = PrioritizedSweeping(model, 3)
+# ps = PrioritizedSweeping(model, 3)
+ps = PrioritizedQLearning(model)
 
 total = 0
 for i in range(1000):
 	(action, reward, state) = ps.next() 
-	#print action, reward, state
+	# print action, reward, state
 	total = total + reward
 print "total", total / float(1000)
 total = 0

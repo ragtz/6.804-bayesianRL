@@ -1,6 +1,5 @@
 from RL_framework import *
 import heapq
-from ChainModel import *
 import random
 
 class PrioritizedSweeping(RLAlgorithm):

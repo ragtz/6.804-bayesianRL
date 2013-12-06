@@ -1,5 +1,4 @@
 from RL_framework import *
-from ChainModel import *
 import random
 
 class QLearning(RLAlgorithm):
