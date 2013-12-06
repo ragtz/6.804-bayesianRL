@@ -67,9 +67,13 @@ class Model(RLObject):
     def reset(self):
         self.current_state  = self.start_state
 
-class RLAlgorithm:
-    def get_transition(self, state, action, next_state):
-        raise Exception("not implemented")
+class RLAlgorithm(object):
+    # compute transition function P(s1, a, s2)
+    def get_transition(self, s1, a, s2):
+        v = (s1, a, s2)
+        if v in self.P:
+            return self.P[v]/float(self.P[(s1, a)])
+        return 0
 
     def get_reward(self, s1, a, s2):
         """ compute the reward for state, action, next state"""

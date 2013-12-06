@@ -6,7 +6,7 @@ import random
 class PrioritizedSweeping(RLAlgorithm):
     # model: the input model
     # e: the parameter for randomization
-    def __init__(self, model, k = 5, e = 0):
+    def __init__(self, model, k = 5, epsilon = 0.90, degrading_constant = 0.99):
         self.model = model
         # reward model
         self.R = {}
@@ -16,7 +16,8 @@ class PrioritizedSweeping(RLAlgorithm):
         self.V = {}
         # parameters for the algorithm
         self.k = k
-        self.e = e
+        self.epsilon = epsilon
+        self.degrading_constant = degrading_constant
         # priority queue
         self.queue = []
         self.delta = 0.001
@@ -97,15 +98,21 @@ class PrioritizedSweeping(RLAlgorithm):
             capacity = self.compute_impact(state, s0, delta)
             self.update_queue(s0, -capacity)
 
+    def choose_action(self, state):
+        # with some probability, choose a random action
+        action = None
+        if random.random() < self.epsilon:
+            actions = self.model.get_actions(state)
+            action = random.choice(actions)
+            self.epsilon *= self.degrading_constant
+        else:
+            best_next_state = self.get_next_best_state()
+            action = self.get_best_action(best_next_state)
+        return action
+
     def next(self, action = None):
         if action == None:
-            # with some probability, choose a random action
-            if random.random() < self.e:
-                actions = self.model.get_actions(self.model.current_state)
-                action = actions[random.randint(0, len(actions) - 1)]
-            else:
-                best_next_state = self.get_next_best_state()
-                action = self.get_best_action(best_next_state)
+            action = self.choose_action(self.model.current_state)
         current_state = self.model.current_state
         reward = self.model.perform(action)
         next_state = self.model.current_state

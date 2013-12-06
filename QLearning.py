@@ -5,19 +5,14 @@ import random
 class QLearning(RLAlgorithm):
     # model: the input model
     # e: the parameter for randomization
-    def __init__(self, model, learning_rate = 0.2, discount_rate = 0.2, epsilon = 0.2):
+    def __init__(self, model, learning_rate = 0.2, discount_rate = 0.2, epsilon = 0.2, degrading_constant = 0.999):
         """ Implementation of Q-learning, with learning rate, discount rate, and epsilon, which is the parameter for exploration"""
         self.model = model
-        # reward model
-        self.R = {}
-        # transition model
-        self.P = {}
-        # value model
-        self.V = {}
         # parameters for the algorithm
         self.learning_rate = learning_rate
         self.discount_rate = discount_rate
         self.epsilon = epsilon
+        self.degrading_constant = degrading_constant
         self.Q = {}
         # the difference constant - used to check if two quantities are roughly the same
         self.detla = 0.001
@@ -77,12 +72,11 @@ class QLearning(RLAlgorithm):
         if random.random() < self.epsilon:
             actions = self.model.get_actions(state)
             action = random.choice(actions)
-            self.epsilon *= 0.99
+            self.epsilon *= self.degrading_constant
         else:
             action = self.get_best_action(state)
         return action
         
-
     def next(self, action = None):
         if action == None:
             # with some probability, choose a random action
@@ -92,4 +86,3 @@ class QLearning(RLAlgorithm):
         next_state = self.model.current_state
         self.update_Q(current_state, action, next_state, reward)
         return (action, reward, next_state)
-        

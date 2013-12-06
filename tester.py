@@ -4,9 +4,10 @@ from PrioritizedSweeping import *
 from QLearning import *
 from QLearn import *
 
-model = LoopModel()
+model = ChainModel()
 # ps = QLearn(model, model.actions)
-ps = QLearning(model, 0.2, 0.2, 0.99)
+# ps = QLearning(model, 0.2, 0.2, 0.99)
+ps = PrioritizedSweeping(model, 3)
 
 total = 0
 for i in range(1000):
