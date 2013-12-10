@@ -3,6 +3,7 @@ import random
 
 class QLearn:
     def __init__(self, model, actions, epsilon=0.1, alpha=0.2, gamma=0.9):
+        """ epsilon = heuristics factor, alpha = learning rate gamma = discount rate """
         self.q = {}
         self.model = model
 
@@ -16,6 +17,7 @@ class QLearn:
         # return self.q.get((state, action), 1.0)
 
     def learnQ(self, state, action, reward, value):
+        """ Q(state, action) = Q_old + alpha*(reward + gamma*maxqnew - Q_old) """
         oldv = self.q.get((state, action), None)
         if oldv is None:
             self.q[(state, action)] = reward
