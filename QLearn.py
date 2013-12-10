@@ -2,7 +2,7 @@ import random
 
 
 class QLearn:
-    def __init__(self, model, actions, epsilon=0.1, alpha=0.2, gamma=0.9):
+    def __init__(self, model, epsilon=0.1, alpha=0.2, gamma=0.9):
         """ epsilon = heuristics factor, alpha = learning rate gamma = discount rate """
         self.q = {}
         self.model = model
@@ -10,7 +10,7 @@ class QLearn:
         self.epsilon = epsilon
         self.alpha = alpha
         self.gamma = gamma
-        self.actions = actions
+        self.actions = model.actions
 
     def getQ(self, state, action):
         return self.q.get((state, action), 0.0)
