@@ -1,8 +1,8 @@
 from RL_framework import *
-from LoopModel import *
+from GraphModel import *
 import random
 
-class ChainModel2(Model):
+class ChainModel2(GraphModel):
     def __init__(self):
         self.name = "Chain Model"
         self.act_a = Action(0)
@@ -18,53 +18,6 @@ class ChainModel2(Model):
         self.start_state = self.state[1]
         self.current_state = self.start_state
         self.step = 0
-
-    def get_action_by_id(self, id):
-        if id == 0:
-            return self.act_a
-        elif id == 1:
-            return self.act_b
-        else:
-            return None
-            
-    def perform_action_a(self):
-        return self.perform(self.act_a)
-
-    def perform_action_b(self):
-        return self.perform(self.act_b)
-
-    def set_current_state_by_state_id(self, id):
-        self.current_state = self.state[id]
-
-    # perform an action on the model
-    def perform(self, action):
-        reward = None
-        if action in self.actions:
-            (next_state_id, reward) = self.current_state.perform(action)
-            self.current_state = self.state[next_state_id]
-            self.step += 1
-        return reward
-
-    def get_next_states(self, state):
-        L = []
-        for id in self.state[state.get_id()].get_next_state_ids():
-            L.append(self.state[id])
-        return L
-
-    def get_states_by_id(self, L):
-        states = []
-        for id in L:
-            states.append(self.state[id])
-        return states
-
-    def get_prev_states(self, state):
-        L = []
-        for id in self.state[state.get_id()].get_prev_state_ids():
-            L.append(self.state[id])
-        return L
-
-    def get_actions(self, state):
-        return self.actions
 
 # define the slippery chain model where with probability e, performing an action
 # will have the opposite effect

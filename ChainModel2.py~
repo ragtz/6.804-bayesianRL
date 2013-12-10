@@ -1,5 +1,5 @@
 from RL_framework import *
-from LoopModel import *
+from GraphModel import *
 import random
 
 class ChainModel2(Model):
@@ -46,11 +46,9 @@ class ChainModel2(Model):
         return reward
 
     def get_next_states(self, state):
-        L = [self.state[1]]
-        if state == self.state[5]:
-            L.append(self.state[5])
-        else:
-            L.append(self.state[state.get_id()+1])
+        L = []
+        for id in self.state[state.get_id()].get_next_state_ids():
+            L.append(self.state[id])
         return L
 
     def get_states_by_id(self, L):
@@ -60,12 +58,10 @@ class ChainModel2(Model):
         return states
 
     def get_prev_states(self, state):
-        if state == self.state[1]:
-            return self.get_states_by_id([1,2,3,4,5])
-        elif state == self.state[5]:
-            return self.get_states_by_id([4,5])
-        else:
-            return self.get_states_by_id([state.get_id() - 1])
+        L = []
+        for id in self.state[state.get_id()].get_prev_state_ids():
+            L.append(self.state[id])
+        return L
 
     def get_actions(self, state):
         return self.actions

@@ -13,7 +13,7 @@ def run_game(record_file=None):
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
-    board = Board(ChainModel2(),float("inf"))
+    board = Board(LoopModelDiffTrans(),float("inf"))
     
     if record_file != None:
         record = True

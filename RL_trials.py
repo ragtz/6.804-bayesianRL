@@ -9,8 +9,8 @@ from LoopModel import *
 def run_trials(num_trails, num_phases, num_steps):
     learners = []
     for i in range(num_trails):
-        m = LoopModel()
-        learners.append(QLearn(m,m.actions))
+        m = ChainModel()
+        learners.append(QLearning(m,m.actions))
     
     phase_avgs = []
     for i in range(num_phases):
