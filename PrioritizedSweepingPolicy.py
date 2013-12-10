@@ -17,7 +17,7 @@ class PrioritizedSweepingPolicy(PrioritizedSweeping):
         # policy model
         self.policy = {}
         for state in self.model.states:
-            self.policy[state] = random.choice(self.model.actions)
+            self.policy[state] = [random.choice(self.model.actions)]
         # parameters for the algorithm
         self.k = k
         self.epsilon = epsilon
@@ -27,7 +27,7 @@ class PrioritizedSweepingPolicy(PrioritizedSweeping):
         self.queue = []
         self.delta = 0.001
 
-    # V(s, a) = sum over s' P(s'|s,a)*(R(s,a,s') + V(s'))
+    # V(s, a) = sum over s' P(s'|s,a)*(R(s,a,s') + V(s')*discount-rate)
     def compute_v_per_action(self, state, action):
         s = 0
         for next_state in self.model.get_next_states(state):
@@ -39,12 +39,16 @@ class PrioritizedSweepingPolicy(PrioritizedSweeping):
     def sweep(self, state):
         actions = self.model.get_actions(state)
         V_new = self.compute_v_per_action(state, actions[0])
-        self.policy[state] = actions[0]
-        for action in actions:
+        self.policy[state] = [actions[0]]
+        for action in actions[1:]:
             temp = self.compute_v_per_action(state, action) 
-            if temp > V_new:
+            # first, check for ties
+            # then check for improvement
+            if abs(temp - V_new) < self.delta*V_new:
+                self.policy[state].append(action)
+            elif temp > V_new:
                 V_new = temp
-                self.policy[state] = action
+                self.policy[state] = [action]
 
         delta = abs(self.get_v(state) - V_new)
         # update the dictionary
@@ -63,7 +67,7 @@ class PrioritizedSweepingPolicy(PrioritizedSweeping):
             # make sure that we do still explore at the minimum level
             self.epsilon = min(self.epsilon, 0.1)
         else:
-            action = self.policy[state]
+            action = random.choice(self.policy[state])
         return action
 
     def next(self, action = None):

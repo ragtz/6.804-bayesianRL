@@ -51,10 +51,12 @@ def run_trials(num_trials, num_phases, num_steps, algorithm = "QLearning", model
             
     return phase_avgs
             
-            
 if __name__ == '__main__':
     if len(sys.argv) >= 4:
-        avgs = run_trials(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), sys.argv[4])
+        model_name = "Chain"
+        if len(sys.argv) == 6:
+            model_name = sys.argv[5]
+        avgs = run_trials(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), sys.argv[4], model_name)
         for (i,avg) in enumerate(avgs):
             print "Phase " + str(i+1) + ": " + str(avg)
     else:

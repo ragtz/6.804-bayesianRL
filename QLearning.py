@@ -50,7 +50,7 @@ class QLearning(RLAlgorithm):
         actions = self.model.get_actions(self.model.current_state)
         m = self.get_Q(state, actions[0])
         best_action = [actions[0]]
-        for action in actions:
+        for action in actions[1:]:
             # first, check for ties
             if abs(self.get_Q(state, action) - m) < self.detla:
                 best_action.append(action)
