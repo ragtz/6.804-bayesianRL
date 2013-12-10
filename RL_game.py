@@ -9,11 +9,11 @@ SCREEN_WIDTH = 400
 SCREEN_HEIGHT = 400
 BG_COLOR = (0,0,0)
 
-def run_game(record_file=None):
+def run_game(model, record_file=None):
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
-    board = Board(LoopModelDiffTrans(),float("inf"))
+    board = Board(model,300)
     
     if record_file != None:
         record = True
@@ -58,9 +58,9 @@ def run_game(record_file=None):
         
         pygame.display.flip()
         
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        f = open(sys.argv[1],'w')
-        run_game(f)
-    else:    
-        run_game()
+#if __name__ == '__main__':
+#    if len(sys.argv) > 1:
+#        f = open(sys.argv[1],'w')
+#        run_game(f)
+#    else:    
+#        run_game()
