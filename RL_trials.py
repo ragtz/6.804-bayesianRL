@@ -1,5 +1,6 @@
 import sys
 from PrioritizedSweeping import *
+from PrioritizedSweepingPolicy import *
 from QLearning import *
 from QLearn import *
 from ChainModel import *
@@ -11,8 +12,12 @@ def get_learner(algorithm, model):
         return QLearning(model)
     elif algorithm == "PrioritizedSweeping":
         return PrioritizedSweeping(model)
+    elif algorithm == "PrioritizedSweepingPolicy":
+        return PrioritizedSweepingPolicy(model)
     elif algorithm == "QLearn":
         return QLearn(model)
+    else:
+        raise Exception(algorithm + " not found")
 
 def get_model(model_name):
     if model_name == "Chain":
