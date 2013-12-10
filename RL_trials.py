@@ -6,11 +6,12 @@ from ChainModel import *
 from ChainModel2 import *
 from LoopModel import *
 
-def run_trials(num_trails, num_phases, num_steps):
+def run_trials(num_trials, num_phases, num_steps):
     learners = []
-    for i in range(num_trails):
+    for i in range(num_trials):
         m = ChainModel()
-        learners.append(QLearning(m,m.actions))
+        #learners.append(QLearn(m,m.actions))
+        learners.append(PrioritizedSweeping(m))
     
     phase_avgs = []
     for i in range(num_phases):

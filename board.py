@@ -75,6 +75,7 @@ class ActionsIcon:
 class RewardIcon:
     def __init__(self, start = 0, font_size = 50, color = (255,255,255)):
         self.reward = start
+        self.current_reward = start
         self.font_size = font_size
         self.color = color
         self.font = pygame.font.SysFont(pygame.font.get_default_font(), font_size)
@@ -82,6 +83,7 @@ class RewardIcon:
     def update(self, reward):
         if reward != None:
             self.reward += reward
+            self.current_reward = reward
         
     def display(self, screen):
         pad = self.font_size/5
@@ -89,6 +91,15 @@ class RewardIcon:
         y = screen.get_height()
         label = self.font.render("R: "+str(self.reward), 1, self.color)
         screen.blit(label, (x-label.get_width()-pad,pad))
+        
+        if self.current_reward != 0:
+            if self.current_reward > 0:
+                r = "+"+str(self.current_reward)
+            else:
+                r = str(self.current_reward)
+            label = self.font.render(r, 1, self.color)
+            screen.blit(label, ((x/2)-(label.get_width()/2),y/8))
+        
         
 class StepIcon:
     def __init__(self, start = 0, font_size = 50, color = (255,255,255)):

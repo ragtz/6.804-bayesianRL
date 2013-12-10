@@ -8,9 +8,9 @@ from PrioritizedQLearning import *
 
 model = ChainModel()
 # ps = QLearn(model, model.actions)
-# ps = QLearning(model, 0.2, 0.2, 0.99)
+ps = QLearning(model, 0.2, 0.2, 0.99)
 # ps = PrioritizedSweeping(model, 3)
-ps = PrioritizedQLearning(model)
+#ps = PrioritizedQLearning(model)
 
 total = 0
 for i in range(1000):
