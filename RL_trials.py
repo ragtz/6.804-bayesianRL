@@ -9,7 +9,7 @@ from LoopModel import *
 def run_trials(num_trials, num_phases, num_steps):
     learners = []
     for i in range(num_trials):
-        m = ChainModel()
+        m = ChainModel2()
         #learners.append(QLearn(m,m.actions))
         learners.append(PrioritizedSweeping(m))
     

@@ -5,7 +5,7 @@ import random
 class PrioritizedSweeping(RLAlgorithm):
     # model: the input model
     # e: the parameter for randomization
-    def __init__(self, model, k = 5, epsilon = 0.90, degrading_constant = 0.99):
+    def __init__(self, model, k = 5, epsilon = 0.90, degrading_constant = 0.99, discount_rate = 0.2):
         self.model = model
         # reward model
         self.R = {}
@@ -17,6 +17,7 @@ class PrioritizedSweeping(RLAlgorithm):
         self.k = k
         self.epsilon = epsilon
         self.degrading_constant = degrading_constant
+        self.discount_rate = discount_rate
         # priority queue
         self.queue = []
         self.delta = 0.001
@@ -26,15 +27,23 @@ class PrioritizedSweeping(RLAlgorithm):
         # print type(state)
         return self.V.get(state, 0)
 
+    # compute the best reward for from a state to another
+    def get_best_reward(self, state, next_state):
+        actions = self.model.get_actions(state)
+        reward = self.get_reward(state, actions[0], next_state)
+        for action in actions:
+            reward = max(reward, self.get_reward(state, action, next_state))
+        return reward
+
     # get the next best state
     # if the best 
-    def get_next_best_state(self):
-        L = self.model.get_next_states(self.model.current_state)
+    def get_next_best_state(self, state):
+        L = self.model.get_next_states(state)
         best_state = [L[0]]
         m = self.get_v(L[0])
         for s in L:
-            # first, check for ties, then check for >
-            if abs(self.get_v(s) - m) < self.delta*m:
+            # first, check for ties, then check for greater state
+            if abs(self.get_v(s) - m + self.get_best_reward(state, s)) < self.delta*m:
                 best_state.append(s)
             elif self.get_v(s) > m:
                 m = self.get_v(s)
@@ -48,6 +57,8 @@ class PrioritizedSweeping(RLAlgorithm):
         p = self.get_transition(self.model.current_state, actions[0], next_state)
         action = [actions[0]]
         for a in actions:
+            # first check, for tie
+            # then check for greater probability
             if abs(self.get_transition(self.model.current_state, a, next_state) - p) < self.delta:
                 action.append(a)
             elif self.get_transition(self.model.current_state, a, next_state) > p:
@@ -67,6 +78,7 @@ class PrioritizedSweeping(RLAlgorithm):
         # if the state is not in the queue, add the state to the queue
         if i == -1:
             self.queue.append((value, state))
+        #print self.queue
         heapq.heapify(self.queue)
 
     # compute impact C(s, s*) = sum over a P(s|s*,a)*delta(s)
@@ -81,7 +93,7 @@ class PrioritizedSweeping(RLAlgorithm):
         s = 0
         for next_state in self.model.get_next_states(state):
             s += self.get_transition(state, action, next_state)*(
-                self.get_reward(state, action, next_state) + self.get_v(next_state))
+                self.get_reward(state, action, next_state) + self.get_v(next_state)*self.discount_rate)
         return s
 
     # perform a Bellman backup on that state
@@ -104,8 +116,10 @@ class PrioritizedSweeping(RLAlgorithm):
             actions = self.model.get_actions(state)
             action = random.choice(actions)
             self.epsilon *= self.degrading_constant
+            # make sure that we do still explore at the minimum level
+            self.epsilon = min(self.epsilon, 0.1)
         else:
-            best_next_state = self.get_next_best_state()
+            best_next_state = self.get_next_best_state(self.model.current_state)
             action = self.get_best_action(best_next_state)
         return action
 
