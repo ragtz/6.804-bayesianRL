@@ -3,6 +3,9 @@ from QLearning import *
 import random
 import heapq
 
+# implementation from here:
+# http://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_9.pdf
+
 class PrioritizedQLearning(QLearning):
     # model: the input model
     # e: the parameter for randomization

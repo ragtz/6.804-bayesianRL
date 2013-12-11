@@ -1,6 +1,7 @@
 import sys
 from PrioritizedSweeping import *
 from PrioritizedSweepingPolicy import *
+from PrioritizedSweepingHeuristics import *
 from QLearning import *
 from QLearn import *
 from ChainModel import *
@@ -14,6 +15,8 @@ def get_learner(algorithm, model):
         return PrioritizedSweeping(model)
     elif algorithm == "PrioritizedSweepingPolicy":
         return PrioritizedSweepingPolicy(model)
+    elif algorithm == "PrioritizedSweepingHeuristics":
+        return PrioritizedSweepingHeuristics(model)
     elif algorithm == "QLearn":
         return QLearn(model)
     else:
