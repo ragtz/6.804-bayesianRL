@@ -18,6 +18,8 @@ class PrioritizedSweeping(RLAlgorithm):
         self.epsilon = epsilon
         self.degrading_constant = degrading_constant
         self.discount_rate = discount_rate
+        # keep track of the number of (state, action)
+        self.num_actions = {}
         # priority queue
         self.queue = []
         self.delta = 0.001
@@ -26,6 +28,10 @@ class PrioritizedSweeping(RLAlgorithm):
     def get_v(self, state):
         # print type(state)
         return self.V.get(state, 0)
+
+    # get the number of times for a pair (state, action)
+    def get_num_acions(self, state, action):
+        return self.num_actions.get((state, action), 0)
 
     # compute the best reward for from a state to another
     def get_best_reward(self, state, next_state):
