@@ -57,6 +57,6 @@ class PrioritizedSweepingHeuristics(PrioritizedSweeping):
             action = least_action
         else:
             best_next_state = self.get_next_best_state(state)
-            # action = self.get_best_action(state, best_next_state)
-            action = self.get_best_action_probability(state, best_next_state)
+            action = self.get_best_action(state, best_next_state)
+            # action = self.get_best_action_probability(state, best_next_state)
         return action

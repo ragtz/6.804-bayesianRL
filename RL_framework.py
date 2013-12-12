@@ -80,7 +80,7 @@ class RLAlgorithm(object):
         v = (s1, a, s2)
         if v in self.R:
             (s, total) = self.R[v]
-            return s/float(total)
+            return float(s)/total
         return 0
 
     def get_transition_table(self, state, action):
