@@ -19,6 +19,8 @@ def get_learner(algorithm, model):
         return PrioritizedSweepingHeuristics(model)
     elif algorithm == "QLearn":
         return QLearn(model)
+    elif algorithm == "PrioritizedQLearning":
+        return PrioritizedQLearning(model)
     else:
         raise Exception(algorithm + " not found")
 
