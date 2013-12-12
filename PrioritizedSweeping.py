@@ -59,6 +59,7 @@ class PrioritizedSweeping(RLAlgorithm):
     # if there are actions with equal rewards, return one randomly
     def get_best_action(self, state, next_state):
         actions = self.model.get_actions(state)
+        # small constant in this to differentiate between action with zero reward vs. no relation state
         constant = 0.1
         p = self.get_transition(state, actions[0], next_state)
         r = self.get_reward(state, actions[0], next_state) + constant
@@ -143,18 +144,12 @@ class PrioritizedSweeping(RLAlgorithm):
             actions = self.model.get_actions(state)
             action = random.choice(actions)
             self.epsilon *= self.degrading_constant
-            # print "random", action, self.epsilon
             # make sure that we do still explore at the minimum level
             self.epsilon = max(self.epsilon, 0.01)
         else:
             best_next_state = self.get_next_best_state(state)
             # action = self.get_best_action(state, best_next_state)
             action = self.get_best_action_probability(state, best_next_state)
-            # if state.id > 2:
-            #     print "best action", (state, action)
-            # if state.id == 5:
-            #     print "reward model = ", self.R
-            
         return action
     
     def sweep_queue(self):
@@ -177,5 +172,4 @@ class PrioritizedSweeping(RLAlgorithm):
         #     print (current_state, action, next_state, reward)
         #     print "reward model = ", self.R[(current_state, action, next_state)]
         #     print "reward = ", self.get_reward(current_state, action, next_state)            
-            #time.sleep(2)
         return (action, reward, next_state)
