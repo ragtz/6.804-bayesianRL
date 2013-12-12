@@ -59,15 +59,16 @@ class PrioritizedSweeping(RLAlgorithm):
     # if there are actions with equal rewards, return one randomly
     def get_best_action(self, state, next_state):
         actions = self.model.get_actions(state)
+        constant = 0.1
         p = self.get_transition(state, actions[0], next_state)
-        r = self.get_reward(state, actions[0], next_state)
+        r = self.get_reward(state, actions[0], next_state) + constant
         # expected reward
         m = p*r
         best_action = [actions[0]]
         for a in actions[1:]:
             # first check, for tie
             # then check for greater probability
-            temp = self.get_transition(state, a, next_state)*self.get_reward(state, a, next_state)
+            temp = self.get_transition(state, a, next_state)*(self.get_reward(state, a, next_state) + constant)
             if abs(temp - m) < self.delta*m:
                 best_action.append(a)
             elif temp > m:
@@ -125,7 +126,7 @@ class PrioritizedSweeping(RLAlgorithm):
     def sweep(self, state):
         actions = self.model.get_actions(state)
         V_new = self.compute_v_per_action(state, actions[0])
-        for action in actions:
+        for action in actions[1:]:
             V_new = max(V_new, self.compute_v_per_action(state, action))
         delta_change = abs(self.get_v(state) - V_new)
         # update the dictionary

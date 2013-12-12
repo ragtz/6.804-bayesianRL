@@ -41,8 +41,8 @@ class PrioritizedSweepingHeuristics(PrioritizedSweeping):
                 least_action.append(action)
             elif self.get_num_actions(state, action) < m:
                 m = self.get_num_actions(state, action)
-                least_action = [action]
-        return (random.choice(least_action), 4.0/(4 + m**2))
+                least_action = [action]          
+        return (random.choice(least_action), 4.0/(4 + m))
 
     def update_action(self, state, action):
         self.num_actions[(state, action)] = self.get_num_actions(state, action) + 1
@@ -52,6 +52,7 @@ class PrioritizedSweepingHeuristics(PrioritizedSweeping):
         (least_action, epsilon) = self.get_least_action(state)
         # print epsilon
         action = None
+        print state
         if random.random() < epsilon:
             self.update_action(state, least_action)
             action = least_action
@@ -59,4 +60,7 @@ class PrioritizedSweepingHeuristics(PrioritizedSweeping):
             best_next_state = self.get_next_best_state(state)
             action = self.get_best_action(state, best_next_state)
             # action = self.get_best_action_probability(state, best_next_state)
+            if state.id == 5:
+                print "best action", (state, action)
+                print "reward model = ", self.R                  
         return action
