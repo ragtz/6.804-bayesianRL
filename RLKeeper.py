@@ -45,6 +45,10 @@ class Keeper(object):
         (s, total) = self.R.get((s1, a, s2), (0, 0))
         self.R[(s1, a, s2)] = (s + r, total + 1)
 
+    def update_reward_sums(self, state, action, r):
+        self.update_sum_reward(state, action, r)
+        self.update_sum_reward_squares(state, action, r)
+
     def get_reward_table(self, state, action, next_states):
         L = []
         for next_state in next_states:

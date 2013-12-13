@@ -169,6 +169,5 @@ class PrioritizedSweeping(RLAlgorithm):
         #if (current_state.id == 8):
             #print "state 8 has been reached"
             #print (current_state, action, next_state, reward)
-            #print "reward model = ", self.R[(current_state, action, next_state)]
             #print "reward = ", self.get_reward(current_state, action, next_state)            
         return (action, reward, next_state)

@@ -58,6 +58,9 @@ class ChainModel(Model):
         for id in L:
             states.append(self.state[id])
         return states
+    
+    def get_state_by_id(self, id):
+        return self.state[id]
 
     def get_prev_states(self, state):
         if state == self.state[1]:
