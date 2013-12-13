@@ -6,7 +6,7 @@ import time
 class PrioritizedSweeping(RLAlgorithm):
     # model: the input model
     # e: the parameter for randomization
-    def __init__(self, model, k = 2, epsilon = 1, degrading_constant = 0.99, discount_rate = 0.9):
+    def __init__(self, model, k = 2, epsilon = 1, degrading_constant = 0.99, discount_rate = 0.2):
         self.model = model
         # reward model
         self.R = {}
@@ -115,12 +115,12 @@ class PrioritizedSweeping(RLAlgorithm):
             s += self.get_transition(s0, action, s1)*delta
         return s
 
-    # V(s, a) = sum over s' P(s'|s,a)*(R(s,a,s') + V(s'))
+    # V(s, a) = sum over s' P(s'|s,a)*(R(s,a,s') + V(s')*discount_rate)
     def compute_v_per_action(self, state, action):
         s = 0
         for next_state in self.model.get_next_states(state):
             s += self.get_transition(state, action, next_state)*(
-                self.get_reward(state, action, next_state) + self.get_v(next_state)*self.discount_rate)
+                self.get_reward(state, action, next_state) + self.get_v(next_state)*self.discount_rate**2)
         return s
 
     # perform a Bellman backup on that state
@@ -167,9 +167,10 @@ class PrioritizedSweeping(RLAlgorithm):
         self.update_reward(current_state, action, next_state, reward)
         self.sweep(current_state)
         self.sweep_queue()
-        # if (current_state.id == 5):
-        #     print "state 5 has been reached"
-        #     print (current_state, action, next_state, reward)
-        #     print "reward model = ", self.R[(current_state, action, next_state)]
-        #     print "reward = ", self.get_reward(current_state, action, next_state)            
+        # print self.V
+        #if (current_state.id == 8):
+            #print "state 8 has been reached"
+            #print (current_state, action, next_state, reward)
+            #print "reward model = ", self.R[(current_state, action, next_state)]
+            #print "reward = ", self.get_reward(current_state, action, next_state)            
         return (action, reward, next_state)

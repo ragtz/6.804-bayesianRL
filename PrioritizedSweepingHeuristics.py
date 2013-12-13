@@ -42,24 +42,39 @@ class PrioritizedSweepingHeuristics(PrioritizedSweeping):
             elif self.get_num_actions(state, action) < m:
                 m = self.get_num_actions(state, action)
                 least_action = [action]          
-        return (random.choice(least_action), 4.0/(4 + m))
+        return (random.choice(least_action), 4.0/(4 + m**2))
 
+    # update the action count per state
     def update_action(self, state, action):
         self.num_actions[(state, action)] = self.get_num_actions(state, action) + 1
+
+    # get the best action using value - iteration formula
+    # https://stellar.mit.edu/S/course/6/fa13/6.S078/courseMaterial/topics/topic1/lectureNotes/mdp_vi/mdp_vi.pdf
+    def get_best_action_value_iteration(self, state):
+        actions = self.model.actions
+        m = self.compute_v_per_action(state, actions[0])
+        best_action = [actions[0]]
+        for action in actions[1:]:
+            temp = self.compute_v_per_action(state, action)
+            if abs(temp - m) < self.delta*m:
+                best_action.append(action)
+            elif temp > m:
+                best_action = [action]
+        return random.choice(best_action)
 
     def choose_action(self, state):
         # with some probability, choose a random action
         (least_action, epsilon) = self.get_least_action(state)
-        # print epsilon
         action = None
         if random.random() < epsilon:
             self.update_action(state, least_action)
             action = least_action
         else:
-            best_next_state = self.get_next_best_state(state)
-            action = self.get_best_action(state, best_next_state)
+            # best_next_state = self.get_next_best_state(state)
+            # action = self.get_best_action(state, best_next_state)
             # action = self.get_best_action_probability(state, best_next_state)
-            #if state.id == 5:
+            action = self.get_best_action_value_iteration(state)
+            #if state.id == 8:
                 #print "best action", (state, action)
                 #print "reward model = ", self.R                  
         return action

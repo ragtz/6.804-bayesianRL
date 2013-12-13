@@ -27,7 +27,10 @@ class SpecialLoopModel(LoopModel):
     def __init__(self):
         LoopModel.__init__(self)
         # increase the reward to test the effect
-        self.state[8] = StateNode(8, [self.act_a,self.act_b], [0,0], [1000,1000], [7])
+        self.state[5] = StateNode(5, [self.act_a,self.act_b], [0,6], [0,1], [0])
+        self.state[6] = StateNode(6, [self.act_a,self.act_b], [0,7], [0,1], [5])
+        self.state[7] = StateNode(7, [self.act_a,self.act_b], [0,8], [0,1], [6])
+        self.state[8] = StateNode(8, [self.act_a,self.act_b], [0,0], [10,10], [7])
         
 class LoopModelDeadEnd(GraphModel):
     def __init__(self):
