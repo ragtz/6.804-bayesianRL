@@ -71,31 +71,24 @@ class Model(RLObject):
 class RLAlgorithm(object):
     def __init__(self):
         self.keepr = Keeper()
+        self.model = Model()
 
     # compute transition function P(s1, a, s2)
     def get_transition(self, s1, a, s2):
-        v = (s1, a, s2)
-        if v in self.P:
-            return self.P[v]/float(self.P[(s1, a)])
-        return 0
+       return self.keepr.get_transition(s1, a, s2)
 
     def get_reward(self, s1, a, s2):
         return self.keepr.get_reward(s1, a, s2)
 
     def get_transition_table(self, state, action):
-        L = []
-        for next_state in self.model.get_next_states(state):
-            if self.get_transition(state, action, next_state) > 0:
-                L.append((next_state, self.get_transition(state, action, next_state)))
-        return L
+        return self.keepr.get_transition_table(state, action, self.model.get_next_states(state))
 
     def get_reward_table(self, state, action):
         return self.keepr.get_reward_table(state, state, action, self.model.get_next_states(state))
 
     # update the transition model, keeping track of counts
     def update_transition(self, s1, a, s2):
-        self.P[(s1, a)] = self.P.get((s1, a), 0) + 1
-        self.P[(s1, a, s2)] = self.P.get((s1, a, s2), 0) + 1
+        self.keepr.update_transition(s1, a, s2)
 
     # keeping track of the reward model
     def update_reward(self, s1, a, s2, r):

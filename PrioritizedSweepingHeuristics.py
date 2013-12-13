@@ -8,10 +8,6 @@ class PrioritizedSweepingHeuristics(PrioritizedSweeping):
     # e: the parameter for randomization
     def __init__(self, model, k = 2, epsilon = 0.90, degrading_constant = 0.99, discount_rate = 0.9):
         self.model = model
-        # reward model
-        self.R = {}
-        # transition model
-        self.P = {}
         # value model
         self.V = {}
         # book-keeping keeper
@@ -78,5 +74,4 @@ class PrioritizedSweepingHeuristics(PrioritizedSweeping):
             action = self.get_best_action_value_iteration(state)
             #if state.id == 8:
                 #print "best action", (state, action)
-                #print "reward model = ", self.R                  
         return action

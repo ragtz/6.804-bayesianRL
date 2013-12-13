@@ -13,10 +13,6 @@ class PrioritizedQLearning(QLearning):
         num_state = 2, degrading_constant = 0.99, threshold = 0.2):
         """ Implementation of Q-learning, with learning rate, discount rate, and epsilon, which is the parameter for exploration"""
         self.model = model
-        # reward model
-        self.R = {}
-        # transition model
-        self.P = {}
         # book-keeping keeper
         self.keepr = Keeper()
         # parameters for the algorithm
