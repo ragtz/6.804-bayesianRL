@@ -22,7 +22,12 @@ class LoopModel(GraphModel):
         self.start_state = self.state[0]
         self.current_state = self.start_state
         self.step = 0
-        
+
+class SpecialLoop(LoopModel):
+    def __init__(self):
+        LoopModel.__init__(self)
+        # increase the reward to test the effect
+        self.state[8] = StateNode(8, [self.act_a,self.act_b], [0,0], [1000,1000], [7])
         
 class LoopModelDeadEnd(GraphModel):
     def __init__(self):

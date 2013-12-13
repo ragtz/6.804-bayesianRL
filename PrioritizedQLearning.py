@@ -31,10 +31,10 @@ class PrioritizedQLearning(QLearning):
         self.detla = 0.001
 
     # update the quality function
-    # using an explicit formula Q[s,a] = E[R(s,a)] + discount_rate*Σ[T(state, action, s')*max_{a'}Q(s',a')]
+    # using an explicit formula Q[s,a] = E[R(s,a)] + discount_rate*sum[T(state, action, s')*max_{a'}Q(s',a')]
     def update_Q(self, s1, a, s2, r):
         S = 0
-        for state in self.model.states:
+        for state in self.model.get_next_states(s1):
             S += self.discount_rate * self.get_transition(s1, a, state) * (self.get_reward(s1, a, state) + self.get_max_Q(state))
         self.Q[(s1, a)] = S
 
