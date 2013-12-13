@@ -23,7 +23,7 @@ class LoopModel(GraphModel):
         self.current_state = self.start_state
         self.step = 0
 
-class SpecialLoop(LoopModel):
+class SpecialLoopModel(LoopModel):
     def __init__(self):
         LoopModel.__init__(self)
         # increase the reward to test the effect

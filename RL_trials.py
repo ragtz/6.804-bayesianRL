@@ -2,6 +2,7 @@ import sys
 from PrioritizedSweeping import *
 from PrioritizedSweepingPolicy import *
 from PrioritizedSweepingHeuristics import *
+from PrioritizedQLearning import *
 from QLearning import *
 from QLearn import *
 from ChainModel import *
@@ -29,6 +30,8 @@ def get_model(model_name):
         return ChainModel()
     elif model_name == "Loop":
         return LoopModel()
+    elif model_name == "SpecialLoopModel":
+        return SpecialLoopModel()
     elif model_name == "Chain2":
         return ChainModel2()
 
