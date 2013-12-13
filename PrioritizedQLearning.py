@@ -17,6 +17,8 @@ class PrioritizedQLearning(QLearning):
         self.R = {}
         # transition model
         self.P = {}
+        # book-keeping keeper
+        self.keepr = Keeper()
         # parameters for the algorithm
         self.learning_rate = learning_rate
         self.discount_rate = discount_rate

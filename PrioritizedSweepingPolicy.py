@@ -14,6 +14,8 @@ class PrioritizedSweepingPolicy(PrioritizedSweeping):
         self.P = {}
         # value model
         self.V = {}
+        # book-keeping keeper
+        self.keepr = Keeper()
         # policy model
         self.policy = {}
         for state in self.model.states:

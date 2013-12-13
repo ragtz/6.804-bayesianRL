@@ -6,7 +6,7 @@ import time
 class PrioritizedSweeping(RLAlgorithm):
     # model: the input model
     # e: the parameter for randomization
-    def __init__(self, model, k = 2, epsilon = 1, degrading_constant = 0.99, discount_rate = 0.2):
+    def __init__(self, model, k = 2, epsilon = 1, degrading_constant = 0.99, discount_rate = 0.9):
         self.model = model
         # reward model
         self.R = {}
@@ -14,6 +14,8 @@ class PrioritizedSweeping(RLAlgorithm):
         self.P = {}
         # value model
         self.V = {}
+        # book-keeping keeper
+        self.keepr = Keeper()
         # parameters for the algorithm
         self.k = k
         self.epsilon = epsilon

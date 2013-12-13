@@ -14,6 +14,8 @@ class PrioritizedSweepingHeuristics(PrioritizedSweeping):
         self.P = {}
         # value model
         self.V = {}
+        # book-keeping keeper
+        self.keepr = Keeper()
         # parameters for the algorithm
         self.k = k
         self.epsilon = epsilon
