@@ -65,6 +65,7 @@ class Keeper(object):
 
     # update the transition model, keeping track of counts
     def update_transition(self, s1, a, s2):
+        """ Update the transition statistics (including the count for state, (state, action), (state, action, next_state)) """
         self.increase_count(s1, a)
         self.P[(s1, a, s2)] = self.P.get((s1, a, s2), 0) + 1
 
