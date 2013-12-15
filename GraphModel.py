@@ -46,8 +46,11 @@ class GraphModel(Model):
 
     def get_next_states(self, state):
         L = []
+        dic = {}
         for id in self.state[state.get_id()].get_next_state_ids():
-            L.append(self.state[id])
+            if not(self.state[id] in dic):
+                dic[self.state[id]] = 1
+                L.append(self.state[id])
         return L
 
     def get_states_by_id(self, L):
@@ -58,8 +61,11 @@ class GraphModel(Model):
 
     def get_prev_states(self, state):
         L = []
+        dic = {}
         for id in self.state[state.get_id()].get_prev_state_ids():
-            L.append(self.state[id])
+            if not(self.state[id] in dic):
+                dic[self.state[id]] = 1
+                L.append(self.state[id])
         return L
 
     def get_actions(self, state):

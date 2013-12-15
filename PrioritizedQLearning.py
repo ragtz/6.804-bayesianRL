@@ -13,10 +13,8 @@ class PrioritizedQLearning(QLearning):
         num_state = 2, degrading_constant = 0.99, threshold = 0.2):
         """ Implementation of Q-learning, with learning rate, discount rate, and epsilon, which is the parameter for exploration"""
         self.model = model
-        # reward model
-        self.R = {}
-        # transition model
-        self.P = {}
+        # book-keeping keeper
+        self.keepr = Keeper()
         # parameters for the algorithm
         self.learning_rate = learning_rate
         self.discount_rate = discount_rate
@@ -29,6 +27,14 @@ class PrioritizedQLearning(QLearning):
         self.queue = []
         # the difference constant - used to check if two quantities are roughly the same
         self.detla = 0.001
+
+    # update the quality function
+    # using an explicit formula Q[s,a] = E[R(s,a)] + discount_rate*sum[T(state, action, s')*max_{a'}Q(s',a')]
+    def update_Q(self, s1, a, s2, r):
+        S = 0
+        for state in self.model.get_next_states(s1):
+            S += self.discount_rate * self.get_transition(s1, a, state) * (self.get_reward(s1, a, state) + self.get_max_Q(state))
+        self.Q[(s1, a)] = S
 
     def update_or_push(self, p, item):
         index = -1

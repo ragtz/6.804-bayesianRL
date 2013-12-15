@@ -1,3 +1,5 @@
+from RLKeeper import Keeper
+
 class RLObject(object):
     def __init__(self, id):
         self.id = id
@@ -43,7 +45,6 @@ class Model(RLObject):
         s = "Model:" + self.name + "\n"
         s += "States:" + str(self.states) + "\n"
         s += "Actions:" + str(self.actions) + "\n"
-
         return s 
 
     def get_current_state(self):
@@ -68,41 +69,27 @@ class Model(RLObject):
         self.current_state  = self.start_state
 
 class RLAlgorithm(object):
+    def __init__(self):
+        self.keepr = Keeper()
+        self.model = Model()
+
     # compute transition function P(s1, a, s2)
     def get_transition(self, s1, a, s2):
-        v = (s1, a, s2)
-        if v in self.P:
-            return self.P[v]/float(self.P[(s1, a)])
-        return 0
+       return self.keepr.get_transition(s1, a, s2)
 
     def get_reward(self, s1, a, s2):
-        """ compute the reward for state, action, next state"""
-        v = (s1, a, s2)
-        if v in self.R:
-            (s, total) = self.R[v]
-            return s/float(total)
-        return 0
+        return self.keepr.get_reward(s1, a, s2)
 
     def get_transition_table(self, state, action):
-        L = []
-        for next_state in self.model.get_next_states(state):
-            if self.get_transition(state, action, next_state) > 0:
-                L.append((next_state, self.get_transition(state, action, next_state)))
-        return L
+        return self.keepr.get_transition_table(state, action, self.model.get_next_states(state))
 
     def get_reward_table(self, state, action):
-        L = []
-        for next_state in self.model.get_next_states(state):
-            if self.get_reward(state, action, next_state) > 0:
-                L.append((next_state, self.get_reward(state, action, next_state)))
-        return L
+        return self.keepr.get_reward_table(state, state, action, self.model.get_next_states(state))
 
     # update the transition model, keeping track of counts
     def update_transition(self, s1, a, s2):
-        self.P[(s1, a)] = self.P.get((s1, a), 0) + 1
-        self.P[(s1, a, s2)] = self.P.get((s1, a, s2), 0) + 1
+        self.keepr.update_transition(s1, a, s2)
 
     # keeping track of the reward model
     def update_reward(self, s1, a, s2, r):
-        (s, total) = self.R.get((s1, a, s2), (0, 0))
-        self.R[(s1, a, s2)] = (s + r, total + 1)
+       self.keepr.update_reward(s1, a, s2, r)
