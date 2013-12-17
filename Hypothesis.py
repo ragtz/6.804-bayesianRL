@@ -11,6 +11,10 @@ class Hypothesis(object):
         self.R = {}
         # game model
         self.model = model
+        # priority queue
+        self.queue = {}
+        # potential function        
+        self.V = {}
     
     def get_transition(self, state, action, next_state):
         return self.P.get((state, action), {}).get(next_state, 0)

@@ -8,8 +8,8 @@ class BayesPrioritizedSweeping(RLAlgorithm):
         self.model = model
         self.discount_rate = discount_rate
         self.keepr = Keeper()
-        # priority queue
-        self.queue = []
+        # priority queue for ML
+        self.ML_queue = []
         # comparison constant
         self.delta = 0.001
         # number of back-up per action
@@ -53,7 +53,7 @@ class BayesPrioritizedSweeping(RLAlgorithm):
                 reward_func(state, action, next_state) + v_func(next_state)*self.discount_rate**2)
         return s
     
-    # perform a Bellman backup on that state
+    # perform a Bellman backup on that state, 
     def sweep(self, state):
         actions = self.model.get_actions(state)
         V_new = self.compute_v_per_action(state, actions[0], self.get_ML_transition,
@@ -67,7 +67,7 @@ class BayesPrioritizedSweeping(RLAlgorithm):
         # now compute the priority queue for the predecessor
         for s0 in self.model.get_prev_states(state):
                 capacity = self.compute_impact(state, s0, delta_change, self.get_ML_transition)
-                self.update_queue(s0, -capacity, self.queue)
+                self.update_queue(s0, -capacity, self.ML_queue)
     
     # update the min queue with the value & state
     def update_queue(self, state, value, queue):
@@ -86,16 +86,8 @@ class BayesPrioritizedSweeping(RLAlgorithm):
     # sweep the Bellman queue    
     def sweep_queue(self):
         for i in range(self.k - 1):
-            (v, state) = heapq.heappop(self.queue)
+            (v, state) = heapq.heappop(self.ML_queue)
             self.sweep(state)            
-    
-    # V(s, a) = sum over s' P(s'|s,a)*(R(s,a,s') + V(s')*discount_rate)    
-    #def compute_ML_v_per_action(self, state, action):
-        #s = 0
-        #for next_state in self.model.get_next_states(state):
-            #s += self.get_ML_transition(state, action, next_state)*(
-            #self.get_ML_reward(state, action, next_state) + self.get_ML_v(next_state)*self.discount_rate**2)
-        #return s
     
     def draw_hypothesis(self):
         self.hypothesis = Hypothesis.draw_hypothesis(self.model, self.keepr)        
