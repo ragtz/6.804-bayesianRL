@@ -44,6 +44,8 @@ class BayesPrioritizedSweeping(PrioritizedSweeping):
         action = self.choose_action(current_state)
         reward = self.model.perform(action)
         next_state = self.model.current_state
-        
+        # do book-keeping
+        self.keepr.update_transition(current_state, action, next_state)
+        self.keepr.up
         return (action, reward, next_state)
         

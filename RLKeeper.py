@@ -1,5 +1,4 @@
 # this class keeps auxiliary information for RL algorithm
-# TODO: write test suits
 class Keeper(object):
     def __init__(self):
         self.sum_reward_squares = {}
