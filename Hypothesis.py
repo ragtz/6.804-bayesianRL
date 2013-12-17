@@ -1,5 +1,6 @@
 from RL_framework import *
 from ChainModel import *
+from PriorityQueue import *
 import numpy
 
 # for a model, this class holds all the data
@@ -12,14 +13,15 @@ class Hypothesis(object):
         # game model
         self.model = model
         # priority queue
-        self.queue = {}
+        self.queue = UniquePriorityQueue()
         # potential function        
         self.V = {}
     
     def get_transition(self, state, action, next_state):
         return self.P.get((state, action), {}).get(next_state, 0)
     
-    def get_reward(self, state, action):
+    # we don't really use next_state, but we add it here for compatibility's sake
+    def get_reward(self, state, action, next_state = None):
         (u, std) = self.R.get((state, action))
         return random.gauss(u, std)
     
@@ -32,6 +34,12 @@ class Hypothesis(object):
             if self.get_transition(state, action, next_state) > 0:
                 L.append((next_state, self.get_transition(state, action, next_state)))
         return L
+    
+    def get_v(self, state):
+        return self.V.get(state, 0)
+    
+    def update_v(self, state, value):
+        self.V[state] = value
     
     @staticmethod
     def draw_init_hypothesis(model, u0 = 0, std0 = 1):
