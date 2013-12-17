@@ -1,7 +1,7 @@
 from RL_framework import *
-import heapq
 import random
 import time
+from PriorityQueue import UniquePriorityQueue
 
 class PrioritizedSweeping(RLAlgorithm):
     # model: the input model
@@ -18,7 +18,7 @@ class PrioritizedSweeping(RLAlgorithm):
         self.degrading_constant = degrading_constant
         self.discount_rate = discount_rate
         # priority queue
-        self.queue = []
+        self.queue = UniquePriorityQueue()
         self.delta = 0.001
 
     # compute the value function V(s)
@@ -91,20 +91,6 @@ class PrioritizedSweeping(RLAlgorithm):
                 action = [a]
         return random.choice(action)
 
-    # update the min queue with the value & state
-    def update_queue(self, state, value):
-        i = -1
-        # if the state is in the queue, update it
-        for v in range(len(self.queue)):
-            (C, s) = self.queue[v]
-            if s == state:
-                self.queue[v] = (min(C, value), state)
-                i = v
-        # if the state is not in the queue, add the state to the queue
-        if i == -1:
-            self.queue.append((value, state))
-        heapq.heapify(self.queue)
-
     # compute impact C(s, s*) = sum over a P(s|s*,a)*delta(s)
     # s1: current state, s0: predecessor
     def compute_impact(self, s1, s0, delta):
@@ -133,7 +119,7 @@ class PrioritizedSweeping(RLAlgorithm):
         # now compute the priority queue for the predecessor
         for s0 in self.model.get_prev_states(state):
             capacity = self.compute_impact(state, s0, delta_change)
-            self.update_queue(s0, -capacity)
+            self.queue.push_or_update(-capacity, s0)
 
     def choose_action(self, state):
         # with some probability, choose a random action
@@ -152,7 +138,7 @@ class PrioritizedSweeping(RLAlgorithm):
     
     def sweep_queue(self):
         for i in range(self.k - 1):
-            (v, state) = heapq.heappop(self.queue)
+            (v, state) = self.queue.pop()
             self.sweep(state)        
 
     def next(self, action = None):

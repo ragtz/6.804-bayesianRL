@@ -4,7 +4,8 @@ class UniquePriorityQueue(object):
     """ implement the min queue, assuming that each item is unique"""
     def __init__(self, L = []):
         """ initialize the priority queue with some (priority, value) pairs """
-        self.queue = L
+        # copy the list values
+        self.queue = L[:]
         heapq.heapify(self.queue)
         # initialize the dictionary
         self.dic = {}
@@ -16,17 +17,11 @@ class UniquePriorityQueue(object):
         self.dic[value] = 1
 
     def pop(self):
-        print self.queue
-        print self.dic
-        if len(self.dic) != len(self.queue):
-            print "error"        
         (priority, value) = heapq.heappop(self.queue)
         del self.dic[value]
         return (priority, value)
 
     def push_or_update(self, priority, value):
-        if len(self.dic) != len(self.queue):
-            print "error"
         if not(value in self.dic):
             self.push(priority, value)
         else:
@@ -45,3 +40,7 @@ class UniquePriorityQueue(object):
     
     def __contains__(self, value):
         return value in self.dic
+    
+    def __len__(self):
+        return len(self.queue)
+        

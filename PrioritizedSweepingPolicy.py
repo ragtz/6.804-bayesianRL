@@ -22,7 +22,7 @@ class PrioritizedSweepingPolicy(PrioritizedSweeping):
         self.degrading_constant = degrading_constant
         self.discount_rate = discount_rate
         # priority queue
-        self.queue = []
+        self.queue = UniquePriorityQueue()
         self.delta = 0.001
 
     # V(s, a) = sum over s' P(s'|s,a)*(R(s,a,s') + V(s')*discount-rate)
@@ -78,6 +78,6 @@ class PrioritizedSweepingPolicy(PrioritizedSweeping):
         self.update_reward(current_state, action, next_state, reward)
         self.sweep(current_state)
         for i in range(self.k - 1):
-            (v, state) = heapq.heappop(self.queue)
+            (v, state) = self.queue.pop()
             self.sweep(state)
         return (action, reward, next_state)

@@ -1,7 +1,7 @@
 from RL_framework import *
 from QLearning import *
 import random
-import heapq
+from PriorityQueue import *
 
 # implementation from here:
 # http://www.tu-chemnitz.de/informatik/KI/scripts/ws0910/ml09_9.pdf
@@ -24,7 +24,7 @@ class PrioritizedQLearning(QLearning):
         self.threshold = threshold
         self.Q = {}
         # min-queue
-        self.queue = []
+        self.queue = UniquePriorityQueue()
         # the difference constant - used to check if two quantities are roughly the same
         self.detla = 0.001
 
@@ -36,28 +36,16 @@ class PrioritizedQLearning(QLearning):
             S += self.discount_rate * self.get_transition(s1, a, state) * (self.get_reward(s1, a, state) + self.get_max_Q(state))
         self.Q[(s1, a)] = S
 
-    def update_or_push(self, p, item):
-        index = -1
-        for i in range(len(self.queue)):
-            (u, v) = self.queue[i]
-            if v == item:
-                index = i
-        if index == -1:
-            heapq.heappush(self.queue, (p, item))
-        else:
-            self.queue[index] = (min(p, u), item)
-            heapq.heapify(self.queue)
-
     def sweep(self, s1, a, s2, r):
         q = self.get_Q(s1, a)
         p = abs(r + self.discount_rate * self.get_max_Q(s2) - q)
         # might need to push this to the top of the queue
-        heapq.heappush(self.queue, (-p, (s1, a, s2, r)))
+        self.queue.push(-p, (s1, a, s2, r))
 
         # now perform the state sweep
         for i in range(self.num_state):
             if len(self.queue) > 0:
-                (p, (s1, a, s2, r)) = heapq.heappop(self.queue)
+                (p, (s1, a, s2, r)) = self.queue.pop()
                 q = self.get_Q(s1, a)
                 # update the value of Q
                 self.Q[(s1, a)] = q + self.learning_rate*(r + self.discount_rate * self.get_max_Q(s2) - q)
@@ -67,7 +55,7 @@ class PrioritizedQLearning(QLearning):
                         q1 = self.get_Q(prev_state, action)
                         p1 = abs(r1 + self.discount_rate*self.get_max_Q(s1) - q1)
                         if p1 > self.threshold:
-                            self.update_or_push(-p1, (prev_state, action, s1, r1))
+                            self.queue.push_or_update(-p1, (prev_state, action, s1, r1))
             else:
                 break
 

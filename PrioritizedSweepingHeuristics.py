@@ -1,7 +1,7 @@
 from RL_framework import *
 from PrioritizedSweeping import *
-import heapq
 import random
+from PriorityQueue import UniquePriorityQueue
 
 class PrioritizedSweepingHeuristics(PrioritizedSweeping):
     # model: the input model
@@ -20,7 +20,7 @@ class PrioritizedSweepingHeuristics(PrioritizedSweeping):
         # keep track of the number of (state, action)
         self.num_actions = {}
         # priority queue
-        self.queue = []
+        self.queue = UniquePriorityQueue()
         self.delta = 0.001
 
     # get the number of times for a pair (state, action)
