@@ -57,6 +57,6 @@ import RL_trials
 # 	# print action, state
 # print "total", total / float(10000)
 
-avgs = RL_trials.run_trials(10, 8, 1000, "PrioritizedSweepingHeuristics", "Loop")
+avgs = RL_trials.run_trials(10, 8, 1000, "BayesDP", "Loop")
 for (i,avg) in enumerate(avgs):
     print "Phase " + str(i+1) + ": " + str(avg) 

@@ -34,8 +34,10 @@ class HypothesisTest(unittest.TestCase):
     def test_draw_hypothesis(self):
         keepr = Keeper()
         for i in range(1000):
-            keepr.update_reward_and_transition(self.s1, self.act_a, self.s2, 1.4)            
+            keepr.update_reward_and_transition(self.s1, self.act_a, self.s2, 1.4)        
         hypothesis = Hypothesis.draw_hypothesis(self.model, keepr)
+        for next_state in self.model.get_next_states(self.s1):
+            self.assertGreater(hypothesis.get_transition(self.s1, self.act_a, next_state), 0)
         places = 1
         self.assertAlmostEqual(hypothesis.get_transition(self.s1, self.act_a, self.s2), 1, places)       
         self.assertAlmostEqual(hypothesis.get_reward(self.s1, self.act_a), 1.4, places)            

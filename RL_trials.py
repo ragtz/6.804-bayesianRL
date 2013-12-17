@@ -8,6 +8,7 @@ from QLearn import *
 from ChainModel import *
 from ChainModel2 import *
 from LoopModel import *
+from BayesPrioritizedSweeping import *
 
 def get_learner(algorithm, model):
     if algorithm == "QLearning":
@@ -22,6 +23,8 @@ def get_learner(algorithm, model):
         return QLearn(model)
     elif algorithm == "PrioritizedQLearning":
         return PrioritizedQLearning(model)
+    elif algorithm == "BayesDP":
+        return BayesPrioritizedSweeping(model)
     else:
         raise Exception(algorithm + " not found")
 
