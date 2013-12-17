@@ -1,9 +1,8 @@
-import random
 import unittest
 from RLKeeper import *
 from ChainModel import *
 
-class TestKeeper(unittest.TestCase):
+class KeeperTest(unittest.TestCase):
 
     def setUp(self):
         self.keepr = Keeper()
@@ -27,12 +26,16 @@ class TestKeeper(unittest.TestCase):
         self.assertEqual(self.keepr.get_sum_reward_squares(self.s1, self.act_b), 0)
     
     def test_reward_model(self):
-        self.keepr.update_reward(self.s1, self.act_a, self.s2, 2)
-        self.keepr.update_reward(self.s1, self.act_a, self.s2, 3)
-        self.keepr.update_reward(self.s2, self.act_b, self.s2, 1)
+        self.keepr.update_reward_and_transition(self.s1, self.act_a, self.s2, 2)
+        self.keepr.update_reward_and_transition(self.s1, self.act_a, self.s2, 3)
+        self.keepr.update_reward_and_transition(self.s2, self.act_b, self.s2, 1)
         self.assertEqual(self.keepr.get_reward(self.s1, self.act_a, self.s2), 2.5, "This")
         self.assertEqual(self.keepr.get_reward(self.s2, self.act_b, self.s2), 1.0)
         self.assertEqual(self.keepr.get_reward(self.s1, self.act_a, self.s3), 0)
+        self.keepr.update_reward_and_transition(self.s1, self.act_a, self.s3, 1)
+        self.assertEqual(2.0/3, self.keepr.get_var_reward(self.s1, self.act_a))
+        self.keepr.update_reward_and_transition(self.s1, self.act_a, self.s3, 1)
+        self.assertEqual(0.6875, self.keepr.get_var_reward(self.s1, self.act_a))
     
     def test_transition_model(self):
         self.keepr.update_transition(self.s1, self.act_a, self.s2)

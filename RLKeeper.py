@@ -13,6 +13,18 @@ class Keeper(object):
     def get_sum_reward(self, state, action):
         return self.sum_reward.get((state, action), 0)
 
+    def get_var_reward(self, state, action):
+        n = float(self.get_visit_count(state, action))
+        if n == 0:
+            return 0
+        SS = self.get_sum_reward_squares(state, action)
+        S = self.get_sum_reward(state, action)
+        var = (SS - S**2/n)/n
+        # for numerical stability
+        if var < 0:
+            return 0
+        return var
+
     def update_sum_reward(self, state, action, r):
         self.sum_reward[(state, action)] = self.get_sum_reward(state, action) + r
 
@@ -22,10 +34,12 @@ class Keeper(object):
     def update_sum_reward_squares(self, state, action, r):
         self.sum_reward_squares[(state, action)] = self.get_sum_reward_squares(state, action) + r**2
 
-    def get_visit_count(self, state, action = None):
+    def get_visit_count(self, state, action = None, next_state = None):
         if action == None:
             return self.visit_count_state.get(state, 0)
-        return self.visit_count_state_action.get((state, action), 0)
+        if next_state == None:
+            return self.visit_count_state_action.get((state, action), 0)
+        return self.P.get((state, action, next_state), 0)
 
     def increase_count(self, state, action):
         self.visit_count_state[state] = self.get_visit_count(state) + 1
@@ -41,6 +55,7 @@ class Keeper(object):
 
     def update_reward(self, s1, a, s2, r):
         """ Update the reward model"""
+        self.update_reward_sums(s1, a, r)
         (s, total) = self.R.get((s1, a, s2), (0, 0))
         self.R[(s1, a, s2)] = (s + r, total + 1)
 
@@ -67,6 +82,11 @@ class Keeper(object):
         """ Update the transition statistics (including the count for state, (state, action), (state, action, next_state)) """
         self.increase_count(s1, a)
         self.P[(s1, a, s2)] = self.P.get((s1, a, s2), 0) + 1
+
+    # update both reward and transition
+    def update_reward_and_transition(self, state, action, next_state, reward):
+        self.update_transition(state, action, next_state)
+        self.update_reward(state, action, next_state, reward)
 
     def get_transition_table(self, state, action, next_states):
         L = []
