@@ -156,7 +156,7 @@ class PrioritizedSweeping(RLAlgorithm):
             self.sweep(state)        
 
     def next(self, action = None):
-        if action == None:
+        if action == None:  
             action = self.choose_action(self.model.current_state)
         current_state = self.model.current_state
         reward = self.model.perform(action)

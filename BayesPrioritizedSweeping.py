@@ -2,6 +2,7 @@ from PrioritizedSweeping import *
 import numpy
 from RL_framework import Model
 from Hypothesis import *
+from PriorityQueue import UniquePriorityQueue
     
 class BayesPrioritizedSweeping(RLAlgorithm):
     def __init__(self, model, k = 2 , discount_rate = 0.9):
@@ -9,7 +10,7 @@ class BayesPrioritizedSweeping(RLAlgorithm):
         self.discount_rate = discount_rate
         self.keepr = Keeper()
         # priority queue for ML
-        self.ML_queue = []
+        self.ML_queue = UniquePriorityQueue()
         # comparison constant
         self.delta = 0.001
         # number of back-up per action
@@ -67,26 +68,12 @@ class BayesPrioritizedSweeping(RLAlgorithm):
         # now compute the priority queue for the predecessor
         for s0 in self.model.get_prev_states(state):
                 capacity = self.compute_impact(state, s0, delta_change, self.get_ML_transition)
-                self.update_queue(s0, -capacity, self.ML_queue)
-    
-    # update the min queue with the value & state
-    def update_queue(self, state, value, queue):
-        i = -1
-        # if the state is in the queue, update it
-        for v in range(len(queue)):
-            (C, s) = queue[v]
-            if s == state:
-                queue[v] = (min(C, value), state)
-                i = v
-        # if the state is not in the queue, add the state to the queue
-        if i == -1:
-            queue.append((value, state))
-        heapq.heapify(queue)    
+                self.ML_queue.push_or_update(-capacity, s0)
 
     # sweep the Bellman queue    
     def sweep_queue(self):
         for i in range(self.k - 1):
-            (v, state) = heapq.heappop(self.ML_queue)
+            (priority, state) = self.ML_queue.pop()
             self.sweep(state)            
     
     def draw_hypothesis(self):
