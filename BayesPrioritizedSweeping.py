@@ -5,7 +5,7 @@ from Hypothesis import *
 from PriorityQueue import UniquePriorityQueue
     
 class BayesPrioritizedSweeping(RLAlgorithm):
-    def __init__(self, model, k = 2 , discount_rate = 0.9):
+    def __init__(self, model, k = 2 , discount_rate = 0.9, u0 = 1, std0 = 0.2, sampling_interval = 20):
         self.model = model
         self.discount_rate = discount_rate
         self.keepr = Keeper()
@@ -16,12 +16,14 @@ class BayesPrioritizedSweeping(RLAlgorithm):
         # number of back-up per action
         self.k = k
         # default mean and std
-        self.u0 = 1
-        self.std0 = 1
+        self.u0 = u0
+        self.std0 = std0
         # draw initial hypothesis
         self.hypothesis = Hypothesis.draw_init_hypothesis(model, self.u0, self.std0)
         # maximum-likelihood V
         self.ML_V = {}
+        # interval to draw samples
+        self.sampling_interval = sampling_interval
     
     def get_ML_transition(self, s1, a, s2):
         return RLAlgorithm.get_transition(self, s1, a, s2)
@@ -62,7 +64,7 @@ class BayesPrioritizedSweeping(RLAlgorithm):
     def sweep_hypothesis(self, state):
         self.sweep(state,
                    self.hypothesis.get_transition,
-                   self.get_ML_reward,
+                   self.hypothesis.get_reward,
                    self.hypothesis.get_v,
                    self.hypothesis.update_v,
                    self.hypothesis.queue)
@@ -102,9 +104,11 @@ class BayesPrioritizedSweeping(RLAlgorithm):
             self.sweep_ML(state)
     
     def draw_hypothesis(self):
-        self.hypothesis = Hypothesis.draw_hypothesis(self.model, self.keepr)
+        # using the optimistic mode - assuming for unseen (state, action) to have max reward
+        hypothesis = Hypothesis.draw_hypothesis(self.model, self.keepr, self.keepr.max_reward, self.std0)
         # initialize the hypothesis' v function with ML approximate
-        self.hypothesis.V = dict(self.ML_V)
+        hypothesis.V = dict(self.ML_V)
+        return hypothesis
         
     # short cut to compute v per action for the hypothesis
     def compute_action_hypothesis(self, state, action):
@@ -116,7 +120,7 @@ class BayesPrioritizedSweeping(RLAlgorithm):
     def choose_action(self, state):
         # get the best action using value - iteration formula
         # https://stellar.mit.edu/S/course/6/fa13/6.S078/courseMaterial/topics/topic1/lectureNotes/mdp_vi/mdp_vi.pdf
-        actions = self.model.actions
+        actions = self.model.get_actions(state)
         m = self.compute_action_hypothesis(state, actions[0])
         best_action = [actions[0]]
         for action in actions[1:]:
@@ -130,16 +134,24 @@ class BayesPrioritizedSweeping(RLAlgorithm):
     def choose_random_choice(self, state):
         return random.choice(self.model.get_actions(state))
         
-    def next(self, action=None):
-        if self.model.current_state == self.model.start_state:
+    def check_to_draw_hypothesis(self):
+        # draw the hypothesis at every start state
+        # if self.model.current_state == self.model.start_state:
             # draw a new hypothesis
-            self.draw_hypothesis()
+            # self.hypothesis = self.draw_hypothesis()
+        # draw a hypothesis every 20 steps
+        if self.model.num_steps() % 20 == 0:
+            self.hypothesis = self.draw_hypothesis()
             # self.hypothesis.print_complete_reward()
             # self.hypothesis.print_complete_transition()
-        current_state = self.model.current_state
+            
+        
+    def next(self, action=None):
+        # check to draw a new hypothesis
+        self.check_to_draw_hypothesis()
         if action == None:
-            action = self.choose_action(current_state)
-            # action = self.choose_random_choice(current_state)
+            action = self.choose_action(self.model.current_state)
+        current_state = self.model.current_state
         reward = self.model.perform(action)
         next_state = self.model.current_state
         # do book-keeping
@@ -148,11 +160,17 @@ class BayesPrioritizedSweeping(RLAlgorithm):
         self.sweep_ML(current_state)
         self.sweep_hypothesis(current_state)
         self.sweep_queue()
-        if (self.model.current_state.id == 5):
+        if (self.model.current_state.id == 8):
             # print (action, reward, next_state)
             pass
+        
+        if (self.model.current_state.id == 1):
+            # print (action, reward, next_state)
+            pass
+                
         # print self.ML_V
         # print (current_state, action, next_state, reward)
+        # print self.hypothesis.V
         return (action, reward, next_state)
         
     def get_transition(self, s1, a, s2):

@@ -9,6 +9,8 @@ class Keeper(object):
         self.R = {}
         # transition model
         self.P = {}
+        # max reward
+        self.max_reward = 0
 
     def get_sum_reward(self, state, action):
         return self.sum_reward.get((state, action), 0)
@@ -58,6 +60,7 @@ class Keeper(object):
         self.update_reward_sums(s1, a, r)
         (s, total) = self.R.get((s1, a, s2), (0, 0))
         self.R[(s1, a, s2)] = (s + r, total + 1)
+        self.max_reward = max(self.max_reward, r)
 
     def update_reward_sums(self, state, action, r):
         self.update_sum_reward(state, action, r)

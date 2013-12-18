@@ -33,10 +33,12 @@ def get_model(model_name):
         return ChainModel()
     elif model_name == "Loop":
         return LoopModel()
-    elif model_name == "SpecialLoopModel":
+    elif model_name == "SpecialLoop":
         return SpecialLoopModel()
     elif model_name == "Chain2":
         return ChainModel2()
+    else:
+        raise Exception(model_name+ " not found")
 
 def run_trials(num_trials, num_phases, num_steps, algorithm = "QLearning", model_name = "Chain"):
     learners = []
