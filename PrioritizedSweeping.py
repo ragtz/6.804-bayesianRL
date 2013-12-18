@@ -104,7 +104,7 @@ class PrioritizedSweeping(RLAlgorithm):
         s = 0
         for next_state in self.model.get_next_states(state):
             s += self.get_transition(state, action, next_state)*(
-                self.get_reward(state, action, next_state) + self.get_v(next_state)*self.discount_rate**2)
+                self.get_reward(state, action, next_state) + self.get_v(next_state)*self.discount_rate)
         return s
 
     # perform a Bellman backup on that state

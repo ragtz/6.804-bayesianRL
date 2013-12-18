@@ -20,11 +20,25 @@ class Hypothesis(object):
     def get_transition(self, state, action, next_state):
         return self.P.get((state, action), {}).get(next_state, 0)
     
-    # we don't really use next_state, but we add it here for compatibility's sake
+    # only return the reward if next_state can be visited
     def get_reward(self, state, action, next_state = None):
-        (u, std) = self.R.get((state, action))
-        return random.gauss(u, std)
+        if (next_state in self.model.get_next_states(state)):
+            (u, std) = self.R.get((state, action))
+            return random.gauss(u, std)
+        return 0
     
+    def print_complete_reward(self):
+        print "Complete reward model"
+        for state in self.model.states:
+            for action in self.model.actions:
+                print state, action, self.R.get((state, action), (-1,-1))
+                
+    def print_complete_transition(self):
+        print "Complete transition model"
+        for state in self.model.states:
+            for action in self.model.actions:
+                print state, action, self.P.get((state, action), {})
+        
     def get_reward_table(self, state, action):
         return self.R[(state, action)]
     
@@ -79,6 +93,7 @@ class Hypothesis(object):
                 # reward model
                 # simplification: using sample variance instead of doing the priors
                 std = (keepr.get_var_reward(state, action))**0.5
+                std = max(std, 0.01)
                 n = keepr.get_visit_count(state, action)
                 if n == 0:
                     tmp = 0.01
@@ -86,6 +101,8 @@ class Hypothesis(object):
                 else:
                     tmp = max(keepr.get_var_reward(state, action)/float(n), 0.01)
                     sample_mean = float(keepr.get_sum_reward(state, action))/n
+                    # if state.id == 5:
+                    #    print "sample mean=", sample_mean
                 u = numpy.random.normal(sample_mean, tmp)
                 hypothesis.R[(state, action)] = (u, std)
         return hypothesis

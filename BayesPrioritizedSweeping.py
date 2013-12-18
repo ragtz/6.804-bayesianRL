@@ -16,21 +16,15 @@ class BayesPrioritizedSweeping(RLAlgorithm):
         # number of back-up per action
         self.k = k
         # default mean and std
-        self.u0 = 0
+        self.u0 = 1
         self.std0 = 1
         # draw initial hypothesis
         self.hypothesis = Hypothesis.draw_init_hypothesis(model, self.u0, self.std0)
         # maximum-likelihood V
         self.ML_V = {}
-            
-    def get_transition(self, s1, a, s2):
-        return self.hypothesis.get_transition(s1, a, s2)
     
     def get_ML_transition(self, s1, a, s2):
         return RLAlgorithm.get_transition(self, s1, a, s2)
-    
-    def get_reward(self, s1, a, s2):
-        return self.hypothesis.get_reward(s1, a)
     
     def get_ML_reward(self, s1, a, s2):
         return RLAlgorithm.get_reward(self, s1, a, s2)
@@ -54,7 +48,7 @@ class BayesPrioritizedSweeping(RLAlgorithm):
         s = 0
         for next_state in self.model.get_next_states(state):
             s += transition_func(state, action, next_state)*(
-                reward_func(state, action, next_state) + v_func(next_state)*self.discount_rate**2)
+                reward_func(state, action, next_state) + v_func(next_state)*self.discount_rate)
         return s
     
     def sweep_ML(self, state):
@@ -68,7 +62,7 @@ class BayesPrioritizedSweeping(RLAlgorithm):
     def sweep_hypothesis(self, state):
         self.sweep(state,
                    self.hypothesis.get_transition,
-                   self.hypothesis.get_reward,
+                   self.get_ML_reward,
                    self.hypothesis.get_v,
                    self.hypothesis.update_v,
                    self.hypothesis.queue)
@@ -90,15 +84,22 @@ class BayesPrioritizedSweeping(RLAlgorithm):
                 queue.push_or_update(-capacity, s0)
 
     # sweep the Bellman queue for ML estimate
-    def sweep_ML_queue(self):
-        for i in range(self.k - 1):
-            (priority, state) = self.ML_queue.pop()
-            self.sweep_ML(state)
+    #def sweep_ML_queue(self):
+        #for i in range(self.k - 1):
+            #(priority, state) = self.ML_queue.pop()
+            #self.sweep_ML(state)
     
-    def sweep_hypothesis_queue(self):
+    #def sweep_hypothesis_queue(self):
+        #for i in range(self.k - 1):
+            #(priority, state) = self.hypothesis.queue.pop()
+            #self.sweep_hypothesis(state)
+            
+    def sweep_queue(self):
         for i in range(self.k - 1):
             (priority, state) = self.hypothesis.queue.pop()
-            self.sweep_hypothesis(state)
+            self.sweep_hypothesis(state)        
+            (priority, state) = self.ML_queue.pop()
+            self.sweep_ML(state)
     
     def draw_hypothesis(self):
         self.hypothesis = Hypothesis.draw_hypothesis(self.model, self.keepr)
@@ -109,7 +110,7 @@ class BayesPrioritizedSweeping(RLAlgorithm):
     def compute_action_hypothesis(self, state, action):
         return self.compute_v_per_action(state, action,
                                          self.hypothesis.get_transition,
-                                         self.hypothesis.get_reward,
+                                         self.get_ML_reward,
                                          self.hypothesis.get_v)
     
     def choose_action(self, state):
@@ -125,22 +126,33 @@ class BayesPrioritizedSweeping(RLAlgorithm):
             elif temp > m:
                 best_action = [action]
             return random.choice(best_action)    
+    
+    def choose_random_choice(self, state):
+        return random.choice(self.model.get_actions(state))
         
     def next(self, action=None):
         if self.model.current_state == self.model.start_state:
             # draw a new hypothesis
-            self.draw_hypothesis()     
+            self.draw_hypothesis()
+            # self.hypothesis.print_complete_reward()
+            # self.hypothesis.print_complete_transition()
         current_state = self.model.current_state
         if action == None:
             action = self.choose_action(current_state)
+            # action = self.choose_random_choice(current_state)
         reward = self.model.perform(action)
         next_state = self.model.current_state
         # do book-keeping
         self.keepr.update_reward_and_transition(current_state, action, next_state, reward)
+        # do sweeping
         self.sweep_ML(current_state)
-        self.sweep_ML_queue()
         self.sweep_hypothesis(current_state)
-        self.sweep_hypothesis_queue()
+        self.sweep_queue()
+        if (self.model.current_state.id == 5):
+            # print (action, reward, next_state)
+            pass
+        # print self.ML_V
+        # print (current_state, action, next_state, reward)
         return (action, reward, next_state)
         
     def get_transition(self, s1, a, s2):
