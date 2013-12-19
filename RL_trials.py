@@ -31,12 +31,18 @@ def get_learner(algorithm, model):
 def get_model(model_name):
     if model_name == "Chain":
         return ChainModel()
-    elif model_name == "Loop":
-        return LoopModel()
-    elif model_name == "SpecialLoop":
-        return SpecialLoopModel()
+    elif model_name == "SlipperyChain":
+        return SlipperyChainModel()
     elif model_name == "Chain2":
         return ChainModel2()
+    elif model_name == "Loop":
+        return LoopModel()
+    elif model_name == "LoopDeadEnd":
+        return LoopModelDeadEnd()
+    elif model_name == "LoopDiffTrans":
+        return LoopModelDiffTrans()
+    elif model_name == "SpecialLoop":
+        return SpecialLoopModel()
     else:
         raise Exception(model_name+ " not found")
 
