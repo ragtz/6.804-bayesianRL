@@ -53,7 +53,7 @@ class PrioritizedSweepingPolicy(PrioritizedSweeping):
         self.V[state] = V_new
         for s0 in self.model.get_prev_states(state):
             capacity = self.compute_impact(state, s0, delta)
-            self.update_queue(s0, -capacity)
+            self.queue.push_or_update(-capacity, s0)
 
     def choose_action(self, state):
         # with some probability, choose a random action
