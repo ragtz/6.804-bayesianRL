@@ -4,7 +4,7 @@ from random import random
 
 class LoopModel(GraphModel):
     def __init__(self):
-        self.name = "Loop Model"
+        self.name = "Loop"
         self.act_a = Action(0)
         self.act_b = Action(1)
         self.state = {}
@@ -25,7 +25,7 @@ class LoopModel(GraphModel):
 
 class SpecialLoopModel(LoopModel):
     def __init__(self):
-        self.name = "Loop Model"
+        self.name = "SpecialLoop"
         self.act_a = Action(0)
         self.act_b = Action(1)
         self.state = {}
@@ -46,7 +46,7 @@ class SpecialLoopModel(LoopModel):
         
 class LoopModelDeadEnd(GraphModel):
     def __init__(self):
-        self.name = "Loop Model"
+        self.name = "LoopDeadEnd"
         self.act_a = Action(0)
         self.act_b = Action(1)
         self.state = {}
@@ -68,7 +68,7 @@ class LoopModelDeadEnd(GraphModel):
         
 class LoopModelDiffTrans(GraphModel):
     def __init__(self):
-        self.name = "Loop Model"
+        self.name = "LoopDiffTrans"
         self.act_a = Action(0)
         self.act_b = Action(1)
         self.state = {}

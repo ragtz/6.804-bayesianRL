@@ -12,7 +12,16 @@ from BayesPrioritizedSweeping import *
 
 def get_learner(algorithm, model):
     if algorithm == "QLearning":
-        return QLearning(model)
+        if model.name == "SlipperyChain":
+            return QLearning(model)
+        elif model.name == "Loop":
+            return QLearning(model)
+        elif model.name == "LoopDeadEnd":
+            return QLearning(model,0.00001,0.2,0.2,0.999)
+        elif model.name == "LoopDiffTrans":
+            return QLearning(model)
+        else:
+            return QLearning(model)
     elif algorithm == "PrioritizedSweeping":
         return PrioritizedSweeping(model)
     elif algorithm == "PrioritizedSweepingPolicy":
