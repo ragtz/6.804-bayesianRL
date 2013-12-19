@@ -17,13 +17,25 @@ def get_learner(algorithm, model):
         elif model.name == "Loop":
             return QLearning(model)
         elif model.name == "LoopDeadEnd":
-            return QLearning(model,0.00001,0.2,0.2,0.999)
+            return QLearning(model,0.2,0.99,0.001,0.999)
         elif model.name == "LoopDiffTrans":
-            return QLearning(model)
+            return QLearning(model,0.3,0.2,0.2,0.999)
         else:
             return QLearning(model)
+            
     elif algorithm == "PrioritizedSweeping":
-        return PrioritizedSweeping(model)
+        if model.name == "SlipperyChain":
+            return PrioritizedSweeping(model,2,0.2,0.99,0.9)
+        elif model.name == "Loop":
+            return PrioritizedSweeping(model,2,0.999,0.99,0.9)
+        elif model.name == "LoopDeadEnd":
+            return PrioritizedSweeping(model,5,0.999,0.99,0.9)
+        elif model.name == "LoopDiffTrans":
+            return PrioritizedSweeping(model,5,0.8,0.99,0.9)
+        else:
+            return PrioritizedSweeping(model)
+        
+        
     elif algorithm == "PrioritizedSweepingPolicy":
         return PrioritizedSweepingPolicy(model)
     elif algorithm == "PrioritizedSweepingHeuristics":
