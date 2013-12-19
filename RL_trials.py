@@ -12,9 +12,30 @@ from BayesPrioritizedSweeping import *
 
 def get_learner(algorithm, model):
     if algorithm == "QLearning":
-        return QLearning(model)
+        if model.name == "SlipperyChain":
+            return QLearning(model)
+        elif model.name == "Loop":
+            return QLearning(model)
+        elif model.name == "LoopDeadEnd":
+            return QLearning(model,0.2,0.99,0.001,0.999)
+        elif model.name == "LoopDiffTrans":
+            return QLearning(model,0.3,0.2,0.2,0.999)
+        else:
+            return QLearning(model)
+            
     elif algorithm == "PrioritizedSweeping":
-        return PrioritizedSweeping(model)
+        if model.name == "SlipperyChain":
+            return PrioritizedSweeping(model,2,0.2,0.99,0.9)
+        elif model.name == "Loop":
+            return PrioritizedSweeping(model,2,0.999,0.99,0.9)
+        elif model.name == "LoopDeadEnd":
+            return PrioritizedSweeping(model,5,0.999,0.99,0.9)
+        elif model.name == "LoopDiffTrans":
+            return PrioritizedSweeping(model,5,0.8,0.99,0.9)
+        else:
+            return PrioritizedSweeping(model)
+        
+        
     elif algorithm == "PrioritizedSweepingPolicy":
         return PrioritizedSweepingPolicy(model)
     elif algorithm == "PrioritizedSweepingHeuristics":
@@ -31,12 +52,18 @@ def get_learner(algorithm, model):
 def get_model(model_name):
     if model_name == "Chain":
         return ChainModel()
-    elif model_name == "Loop":
-        return LoopModel()
-    elif model_name == "SpecialLoop":
-        return SpecialLoopModel()
+    elif model_name == "SlipperyChain":
+        return SlipperyChainModel()
     elif model_name == "Chain2":
         return ChainModel2()
+    elif model_name == "Loop":
+        return LoopModel()
+    elif model_name == "LoopDeadEnd":
+        return LoopModelDeadEnd()
+    elif model_name == "LoopDiffTrans":
+        return LoopModelDiffTrans()
+    elif model_name == "SpecialLoop":
+        return SpecialLoopModel()
     else:
         raise Exception(model_name+ " not found")
 

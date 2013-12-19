@@ -78,6 +78,7 @@ class ChainModel(Model):
 class SlipperyChainModel(ChainModel):
     def __init__(self, e = 0.2):
         self.e = e
+        self.name = "SlipperyChain"
         ChainModel.__init__(self)
 
     def perform(self, action):
