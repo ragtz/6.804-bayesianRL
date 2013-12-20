@@ -38,14 +38,37 @@ def get_learner(algorithm, model):
         
     elif algorithm == "PrioritizedSweepingPolicy":
         return PrioritizedSweepingPolicy(model)
+        
     elif algorithm == "PrioritizedSweepingHeuristics":
-        return PrioritizedSweepingHeuristics(model)
+        if model.name == "SlipperyChain":
+            return PrioritizedSweepingHeuristics(model,2,0.9,0.99,0.9)
+        elif model.name == "Loop":
+            return PrioritizedSweepingHeuristics(model,2,0.9,0.99,0.9)
+        elif model.name == "LoopDeadEnd":
+            return PrioritizedSweepingHeuristics(model,1,0.999,0.999,0.999)
+        elif model.name == "LoopDiffTrans":
+            return PrioritizedSweepingHeuristics(model,5,0.9,0.99,0.9)
+        else:
+            return PrioritizedSweepingHeuristics(model)
+        
     elif algorithm == "QLearn":
         return QLearn(model)
+        
     elif algorithm == "PrioritizedQLearning":
         return PrioritizedQLearning(model)
+        
     elif algorithm == "BayesDP":
-        return BayesPrioritizedSweeping(model)
+        if model.name == "SlipperyChain":
+            return BayesPrioritizedSweeping(model,10,0.9,1,0.2,20)
+        elif model.name == "Loop":
+            return BayesPrioritizedSweeping(model,10,0.9,1,0.2,20)
+        elif model.name == "LoopDeadEnd":
+            return BayesPrioritizedSweeping(model)
+        elif model.name == "LoopDiffTrans":
+            return BayesPrioritizedSweeping(model,1,0.2,1,0.2,20)
+        else:
+            return BayesPrioritizedSweeping(model)
+            
     else:
         raise Exception(algorithm + " not found")
 
