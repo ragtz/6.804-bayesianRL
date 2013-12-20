@@ -92,19 +92,17 @@ class Hypothesis(object):
                     hypothesis.P[(state, action)][next_state] = p[index]
                 # reward model
                 # simplification: using sample variance instead of doing the priors
-                std = (keepr.get_var_reward(state, action))**0.5
                 n = keepr.get_visit_count(state, action)
                 if n == 0:
-                    tmp = std0
                     sample_mean = u0
-                    std = max(std, std0)                    
+                    std = std0
+                    tmp = std0**2/(model.num_steps() + 1)
                 else:
                     # should think about whether to keep a minimum variance model
-                    tmp = max(keepr.get_var_reward(state, action), std0)/float(n)
+                    tmp = max((keepr.get_var_reward(state, action))**0.5, std0)/float(n)
                     sample_mean = float(keepr.get_sum_reward(state, action))/n
-                    std = max(std, std0/n**0.5)
-                    # if state.id == 5:
-                    #    print "sample mean=", sample_mean
+                    std = (keepr.get_var_reward(state, action))**0.5
+                    std = max(std, std0)
                 u = numpy.random.normal(sample_mean, tmp)
                 hypothesis.R[(state, action)] = (u, std)
         return hypothesis
